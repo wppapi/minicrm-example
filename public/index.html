@@ -7,65 +7,99 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="app">
+<div id="app">
 
-    <!-- ── Sidebar: chat list ── -->
-    <aside id="sidebar">
-      <div id="sidebar-header">
-        <h1>miniCRM</h1>
-      </div>
-      <div id="search-bar">
-        <input id="search-input" type="text" placeholder="Search or start new chat" />
-      </div>
-      <div id="chat-list"></div>
-    </aside>
-
-    <!-- ── Main panel ── -->
-    <main id="chat-panel">
-
-      <!-- shown when no chat is selected -->
-      <div id="chat-placeholder">
-        <div class="icon">💬</div>
-        <p>Select a conversation to start</p>
-      </div>
-
-      <!-- chat header (hidden until a chat is open) -->
-      <div id="chat-header" style="display:none">
-        <div class="chat-avatar" id="header-avatar">👤</div>
-        <div>
-          <div id="header-name"></div>
-          <div id="header-status"></div>
-        </div>
-      </div>
-
-      <!-- message thread -->
-      <div id="messages" style="display:none"></div>
-
-      <!-- reply preview strip -->
-      <div id="reply-preview">
-        <div class="reply-content">
-          <div class="reply-label">Replying to</div>
-          <div id="reply-text"></div>
-        </div>
-        <button id="reply-cancel" title="Cancel reply">✕</button>
-      </div>
-
-      <!-- input bar -->
-      <div id="input-bar" style="display:none">
-        <button id="btn-audio" class="btn-icon" title="Record audio">🎤</button>
-        <textarea
-          id="message-input"
-          rows="1"
-          placeholder="Type a message"
-        ></textarea>
-        <button id="btn-send" class="btn-icon" title="Send">➤</button>
-      </div>
-
-    </main>
+  <!-- ── QR modal ── -->
+  <div id="qr-modal" class="modal hidden">
+    <div class="modal-box">
+      <p class="modal-title">Scan QR code to connect</p>
+      <img id="qr-image" src="" alt="QR Code" />
+      <p class="modal-hint">Open WhatsApp → Linked Devices → Link a Device</p>
+    </div>
   </div>
 
-  <!-- Socket.io client (served by the Node server) -->
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="app.js"></script>
+  <!-- ── Incoming call modal ── -->
+  <div id="call-modal" class="modal hidden">
+    <div class="modal-box call-box">
+      <div class="call-avatar" id="call-avatar">📞</div>
+      <p id="call-from">Unknown</p>
+      <p class="modal-hint">Incoming call</p>
+      <div class="call-actions">
+        <button id="btn-reject-call" class="btn-call reject">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Sidebar ── -->
+  <aside id="sidebar">
+    <div id="sidebar-header">
+      <h1>miniCRM</h1>
+      <div id="conn-status" class="conn-dot disconnected" title="Disconnected"></div>
+    </div>
+    <div id="search-bar">
+      <input id="search-input" type="text" placeholder="Search or start new chat" />
+    </div>
+    <div id="chat-list"></div>
+  </aside>
+
+  <!-- ── Main panel ── -->
+  <main id="chat-panel">
+
+    <div id="chat-placeholder">
+      <div class="ph-icon">💬</div>
+      <p>Select a conversation to start</p>
+    </div>
+
+    <div id="chat-header" class="hidden">
+      <div class="chat-avatar" id="header-avatar">👤</div>
+      <div class="header-info">
+        <div id="header-name"></div>
+        <div id="header-status"></div>
+      </div>
+    </div>
+
+    <div id="messages" class="hidden"></div>
+
+    <!-- reaction picker (shown on hover) -->
+    <div id="reaction-picker" class="hidden">
+      <span data-emoji="👍">👍</span>
+      <span data-emoji="❤️">❤️</span>
+      <span data-emoji="😂">😂</span>
+      <span data-emoji="😮">😮</span>
+      <span data-emoji="😢">😢</span>
+      <span data-emoji="🙏">🙏</span>
+    </div>
+
+    <!-- reply preview -->
+    <div id="reply-preview" class="hidden">
+      <div class="reply-content">
+        <div class="reply-label">Replying to</div>
+        <div id="reply-text"></div>
+      </div>
+      <button id="reply-cancel">✕</button>
+    </div>
+
+    <!-- file preview (shown before sending) -->
+    <div id="file-preview" class="hidden">
+      <div id="file-preview-content"></div>
+      <button id="file-cancel">✕</button>
+    </div>
+
+    <!-- input bar -->
+    <div id="input-bar" class="hidden">
+      <label id="btn-attach" class="btn-icon" title="Attach file">
+        📎
+        <input id="file-input" type="file" accept="image/*,video/*,application/pdf,.doc,.docx,.xls,.xlsx" hidden />
+      </label>
+      <button id="btn-audio" class="btn-icon" title="Record audio">🎤</button>
+      <textarea id="message-input" rows="1" placeholder="Type a message"></textarea>
+      <button id="btn-send" class="btn-icon send" title="Send">➤</button>
+    </div>
+
+  </main>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
