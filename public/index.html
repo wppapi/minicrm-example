@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>miniCRM — WPP API Example</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ── Sidebar: chat list ── -->
+    <aside id="sidebar">
+      <div id="sidebar-header">
+        <h1>miniCRM</h1>
+      </div>
+      <div id="search-bar">
+        <input id="search-input" type="text" placeholder="Search or start new chat" />
+      </div>
+      <div id="chat-list"></div>
+    </aside>
+
+    <!-- ── Main panel ── -->
+    <main id="chat-panel">
+
+      <!-- shown when no chat is selected -->
+      <div id="chat-placeholder">
+        <div class="icon">💬</div>
+        <p>Select a conversation to start</p>
+      </div>
+
+      <!-- chat header (hidden until a chat is open) -->
+      <div id="chat-header" style="display:none">
+        <div class="chat-avatar" id="header-avatar">👤</div>
+        <div>
+          <div id="header-name"></div>
+          <div id="header-status"></div>
+        </div>
+      </div>
+
+      <!-- message thread -->
+      <div id="messages" style="display:none"></div>
+
+      <!-- reply preview strip -->
+      <div id="reply-preview">
+        <div class="reply-content">
+          <div class="reply-label">Replying to</div>
+          <div id="reply-text"></div>
+        </div>
+        <button id="reply-cancel" title="Cancel reply">✕</button>
+      </div>
+
+      <!-- input bar -->
+      <div id="input-bar" style="display:none">
+        <button id="btn-audio" class="btn-icon" title="Record audio">🎤</button>
+        <textarea
+          id="message-input"
+          rows="1"
+          placeholder="Type a message"
+        ></textarea>
+        <button id="btn-send" class="btn-icon" title="Send">➤</button>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Socket.io client (served by the Node server) -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
