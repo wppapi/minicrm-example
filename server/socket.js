@@ -13,11 +13,17 @@ function createWebhookRouter(io) {
     };
   }
 
-  router.post('/message',         relay('message'));
-  router.post('/message-status',  relay('message-status'));
-  router.post('/message-deleted', relay('message-deleted'));
-  router.post('/message-edited',  relay('message-edited'));
-  router.post('/presence',        relay('presence'));
+  router.post('/message',          relay('message'));
+  router.post('/message-status',   relay('message-status'));
+  router.post('/message-deleted',  relay('message-deleted'));
+  router.post('/message-edited',   relay('message-edited'));
+  router.post('/presence',         relay('presence'));
+  router.post('/reaction',         relay('reaction'));
+  router.post('/connect',          relay('connect'));
+  router.post('/disconnect',       relay('disconnect'));
+  router.post('/qr',               relay('qr'));
+  router.post('/poll-vote',        relay('poll-vote'));
+  router.post('/call',             relay('call'));
 
   return router;
 }

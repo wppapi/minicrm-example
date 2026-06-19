@@ -9,11 +9,17 @@ const wpp = axios.create({
 
 // Maps each event name to the webhook endpoint path on this server
 const WEBHOOK_EVENTS = [
-  { event: 'on-message',         path: 'message' },
-  { event: 'on-message-status',  path: 'message-status' },
-  { event: 'on-message-deleted', path: 'message-deleted' },
-  { event: 'on-message-edited',  path: 'message-edited' },
-  { event: 'on-presence',        path: 'presence' },
+  { event: 'on-message',          path: 'message' },
+  { event: 'on-message-status',   path: 'message-status' },
+  { event: 'on-message-deleted',  path: 'message-deleted' },
+  { event: 'on-message-edited',   path: 'message-edited' },
+  { event: 'on-presence',         path: 'presence' },
+  { event: 'on-reaction',         path: 'reaction' },
+  { event: 'on-connect',          path: 'connect' },
+  { event: 'on-disconnect',       path: 'disconnect' },
+  { event: 'on-qr',               path: 'qr' },
+  { event: 'on-poll-vote',        path: 'poll-vote' },
+  { event: 'on-call',             path: 'call' },
 ];
 
 async function registerWebhooks() {
