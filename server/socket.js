@@ -24,6 +24,7 @@ function createWebhookRouter(io) {
   router.post('/qr',               relay('qr'));
   router.post('/poll-vote',        relay('poll-vote'));
   router.post('/call',             relay('call'));
+  router.post('/group-update',     relay('group-update'));
 
   return router;
 }

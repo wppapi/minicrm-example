@@ -20,6 +20,7 @@ const WEBHOOK_EVENTS = [
   { event: 'on-qr',               path: 'qr' },
   { event: 'on-poll-vote',        path: 'poll-vote' },
   { event: 'on-call',             path: 'call' },
+  { event: 'on-group-update',    path: 'group-update' },
 ];
 
 async function registerWebhooks() {

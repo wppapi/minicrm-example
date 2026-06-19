@@ -124,6 +124,17 @@ function createProxyRouter() {
     }
   });
 
+  // --- groups ---
+
+  router.get('/groups/:groupId', async (req, res) => {
+    try {
+      const { data } = await wpp.get(`/groups/${req.params.groupId}`);
+      res.json(data);
+    } catch (err) {
+      forwardError(res, err);
+    }
+  });
+
   // --- media download ---
 
   // Streams media files to the browser without exposing the instance token to the client
