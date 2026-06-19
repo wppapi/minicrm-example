@@ -31,6 +31,7 @@ const els = {
   headerAvatar:     $('header-avatar'),
   headerName:       $('header-name'),
   headerStatus:     $('header-status'),
+  headerParticipants: $('header-participants'),
   messages:         $('messages'),
   inputBar:         $('input-bar'),
   messageInput:     $('message-input'),
@@ -89,11 +90,15 @@ function renderChatList(chats) {
 
 function buildChatItem(chat) {
   const unread = state.unread[chat.id] || 0;
+  const group = isGroup(chat.id);
   const div = document.createElement('div');
   div.className = 'chat-item' + (chat.id === state.activeChatId ? ' active' : '');
   div.dataset.chatId = chat.id;
   div.innerHTML = `
-    <div class="chat-avatar">${avatarHtml(chat)}</div>
+    <div class="chat-avatar">
+      ${avatarHtml(chat)}
+      ${group ? '<span class="group-badge">👥</span>' : ''}
+    </div>
     <div class="chat-info">
       <div class="chat-info-top">
         <span class="chat-name">${esc(chat.name || chat.id)}</span>
@@ -125,6 +130,9 @@ async function openChat(chatId) {
   els.headerStatus.textContent = '';
 
   loadAvatar(chatId, els.headerAvatar);
+  els.headerParticipants.textContent = '';
+
+  if (isGroup(chatId)) loadGroupInfo(chatId);
 
   document.querySelectorAll('.chat-item').forEach(el =>
     el.classList.toggle('active', el.dataset.chatId === chatId)
@@ -188,10 +196,16 @@ function buildBubble(msg, chatId) {
 
   let inner = '';
 
+  // show sender name on incoming group messages
+  if (!msg.fromMe && isGroup(chatId) && msg.senderName) {
+    const hue = nameToHue(msg.senderName);
+    inner += `<div class="sender-name" style="--hue:${hue}">${esc(msg.senderName)}</div>`;
+  }
+
   if (msg.quotedId) {
     const q = findMessage(chatId, msg.quotedId);
     inner += `<div class="quoted" data-target="${msg.quotedId}">
-      <div class="quoted-author">${q?.fromMe ? 'You' : esc(msg.from || '')}</div>
+      <div class="quoted-author">${q?.fromMe ? 'You' : esc(msg.senderName || msg.from || '')}</div>
       <div>${esc(q?.text || q?.type || '…')}</div>
     </div>`;
   }
@@ -442,6 +456,8 @@ socket.on('message', ({ data }) => {
     timestamp: data.timestamp, status: data.fromMe ? 1 : undefined,
     quotedId: data.quotedId || null,
     pollQuestion: data.pollQuestion, pollOptions: data.pollOptions,
+    senderName: data.senderName || null,
+    participant: data.participant || null,
   };
 
   appendMessage(chatId, msg);
@@ -558,6 +574,29 @@ socket.on('qr', ({ data }) => {
   els.connStatus.title = 'Waiting for QR scan';
   els.qrImage.src = `data:image/png;base64,${data.qr}`;
   els.qrModal.classList.remove('hidden');
+});
+
+socket.on('group-update', ({ data }) => {
+  const chatId = data.from;
+
+  // update group name in sidebar if subject changed
+  if (data.action === 'subject') {
+    const chat = state.chats.find(c => c.id === chatId);
+    if (chat) { chat.name = data.subject; refreshChatItem(chatId); }
+    if (state.activeChatId === chatId) els.headerName.textContent = data.subject;
+  }
+
+  // show a system message in the open chat for participant changes
+  if (state.activeChatId === chatId) {
+    const text = groupActionText(data);
+    if (text) {
+      const el = document.createElement('div');
+      el.className = 'system-msg';
+      el.textContent = text;
+      els.messages.appendChild(el);
+      scrollToBottom();
+    }
+  }
 });
 
 socket.on('call', ({ data }) => {
@@ -714,6 +753,47 @@ function findMessage(chatId, msgId) {
 function autoResize(el) {
   el.style.height = 'auto';
   el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+// ── Group helpers ─────────────────────────────────
+
+function isGroup(chatId) {
+  return String(chatId).endsWith('@g.us');
+}
+
+async function loadGroupInfo(chatId) {
+  try {
+    const result = await api(`/groups/${enc(chatId)}`);
+    const group = result?.data;
+    if (!group) return;
+
+    const count = group.participants?.length || 0;
+    els.headerParticipants.textContent = `${count} participant${count !== 1 ? 's' : ''}`;
+  } catch {
+    // non-critical — silently skip
+  }
+}
+
+// Maps a group action to a human-readable system message
+function groupActionText({ action, participants = [], subject }) {
+  const names = participants.join(', ');
+  switch (action) {
+    case 'add':      return `${names} joined the group`;
+    case 'remove':   return `${names} left the group`;
+    case 'promote':  return `${names} is now an admin`;
+    case 'demote':   return `${names} is no longer an admin`;
+    case 'subject':  return `Group name changed to "${subject}"`;
+    case 'description': return 'Group description updated';
+    case 'restrict': return 'Only admins can send messages now';
+    default:         return null;
+  }
+}
+
+// Derives a consistent hue (0–360) from a name string for colored sender labels
+function nameToHue(name) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return Math.abs(hash) % 360;
 }
 
 // ── Start ─────────────────────────────────────────

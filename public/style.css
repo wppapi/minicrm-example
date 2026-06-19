@@ -229,6 +229,53 @@ html, body { height: 100%; font-family: "Segoe UI", system-ui, sans-serif; backg
   font-size: 12.5px; padding: 5px 12px; border-radius: 8px;
 }
 
+/* ── Group sender name ── */
+.sender-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 3px;
+  color: var(--accent);
+}
+
+/* each participant gets a distinct hue via inline --hue */
+.sender-name { color: hsl(var(--hue, 160), 70%, 55%); }
+
+/* group system message (member added/removed/promoted) */
+.system-msg {
+  align-self: center;
+  background: var(--bg-panel);
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  margin: 6px 0;
+  text-align: center;
+}
+
+/* group badge on avatar in chat list */
+.chat-avatar .group-badge {
+  font-size: 11px;
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  background: var(--bg-panel);
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-avatar { position: relative; }
+
+/* participant count subtitle in header */
+#header-participants {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 1px;
+}
+
 /* ── Reaction picker ── */
 #reaction-picker {
   position: absolute; background: var(--bg-panel);
