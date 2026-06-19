@@ -1,0 +1,40 @@
+const axios = require('axios');
+
+const { WPP_API_URL, INSTANCE_TOKEN, INSTANCE_ID, PUBLIC_HOST } = process.env;
+
+const wpp = axios.create({
+  baseURL: WPP_API_URL || 'https://api.wpp-api.io',
+  headers: { 'x-instance-token': INSTANCE_TOKEN },
+});
+
+// Maps each event name to the webhook endpoint path on this server
+const WEBHOOK_EVENTS = [
+  { event: 'on-message',         path: 'message' },
+  { event: 'on-message-status',  path: 'message-status' },
+  { event: 'on-message-deleted', path: 'message-deleted' },
+  { event: 'on-message-edited',  path: 'message-edited' },
+  { event: 'on-presence',        path: 'presence' },
+];
+
+async function registerWebhooks() {
+  if (!PUBLIC_HOST) {
+    console.warn('PUBLIC_HOST not set — skipping webhook registration. Set it in .env and restart.');
+    return;
+  }
+
+  const baseUrl = `https://${PUBLIC_HOST}/webhook`;
+
+  for (const { event, path } of WEBHOOK_EVENTS) {
+    try {
+      await wpp.patch(`/instances/${INSTANCE_ID}/webhooks/${event}`, {
+        url: `${baseUrl}/${path}`,
+      });
+      console.log(`  ✔ ${event} → ${baseUrl}/${path}`);
+    } catch (err) {
+      const reason = err.response?.data?.error?.message || err.message;
+      console.warn(`  ✖ Failed to register ${event}: ${reason}`);
+    }
+  }
+}
+
+module.exports = { registerWebhooks, wpp };
