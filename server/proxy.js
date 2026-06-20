@@ -11,22 +11,22 @@ function createProxyRouter() {
   // ── Instance ────────────────────────────────────────────────────────────────
 
   router.get('/instance/status', async (req, res) => {
-    try { const { data } = await wpp.get('/instance/status'); res.json(data); }
+    try { const { data } = await wpp.get('/status'); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.get('/instance/qr', async (req, res) => {
-    try { const { data } = await wpp.get('/instance/qr'); res.json(data); }
+    try { const { data } = await wpp.get('/qr'); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.post('/instance/logout', async (req, res) => {
-    try { const { data } = await wpp.post('/instance/logout'); res.json(data); }
+    try { const { data } = await wpp.post('/logout'); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.post('/instance/restart', async (req, res) => {
-    try { const { data } = await wpp.post('/instance/restart'); res.json(data); }
+    try { const { data } = await wpp.post('/restart'); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
