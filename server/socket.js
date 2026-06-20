@@ -24,7 +24,12 @@ function createWebhookRouter(io) {
   router.post('/qr',               relay('qr'));
   router.post('/poll-vote',        relay('poll-vote'));
   router.post('/call',             relay('call'));
-  router.post('/group-update',     relay('group-update'));
+  router.post('/group-update',       relay('group-update'));
+  router.post('/chat-upsert',        relay('chat-upsert'));
+  router.post('/contact-update',     relay('contact-update'));
+  router.post('/blocklist-update',   relay('blocklist-update'));
+  router.post('/label-association',  relay('label-association'));
+  router.post('/chat-status',        relay('chat-status'));
 
   return router;
 }
