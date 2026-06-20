@@ -39,7 +39,7 @@ function createProxyRouter() {
 
   router.get('/chats/:chatId/messages', async (req, res) => {
     try {
-      const { data } = await wpp.get(`/chats/${req.params.chatId}/messages`, {
+      const { data } = await wpp.get(`/messages/${req.params.chatId}/messages`, {
         params: { limit: req.query.limit || 50 },
       });
       res.json(data);
@@ -47,37 +47,37 @@ function createProxyRouter() {
   });
 
   router.post('/chats/:chatId/read', async (req, res) => {
-    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/read`); res.json(data); }
+    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/read`, { read: true }); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.post('/chats/:chatId/archive', async (req, res) => {
-    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/archive`, { archived: true }); res.json(data); }
+    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/archive`, { archive: true }); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.post('/chats/:chatId/unarchive', async (req, res) => {
-    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/archive`, { archived: false }); res.json(data); }
+    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/archive`, { archive: false }); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.post('/chats/:chatId/pin', async (req, res) => {
-    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/pin`, { pinned: true }); res.json(data); }
+    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/pin`, { pin: true }); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.post('/chats/:chatId/unpin', async (req, res) => {
-    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/pin`, { pinned: false }); res.json(data); }
+    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/pin`, { pin: false }); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.post('/chats/:chatId/mute', async (req, res) => {
-    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/mute`, req.body); res.json(data); }
+    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/mute`, { mute: true }); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.post('/chats/:chatId/unmute', async (req, res) => {
-    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/mute`, { muted: false }); res.json(data); }
+    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/mute`, { mute: false }); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
@@ -108,7 +108,7 @@ function createProxyRouter() {
   });
 
   router.get('/contacts/check/:number', async (req, res) => {
-    try { const { data } = await wpp.post('/contacts/check', { phone: req.params.number }); res.json(data); }
+    try { const { data } = await wpp.post('/contacts/check', { numbers: [req.params.number] }); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
@@ -319,36 +319,10 @@ function createProxyRouter() {
     catch (err) { forwardError(res, err); }
   });
 
-  // ── Privacy ─────────────────────────────────────────────────────────────────
+  // ── Privacy — endpoint não disponível nesta versão da API ───────────────────
 
-  router.get('/privacy', async (req, res) => {
-    try { const { data } = await wpp.get('/privacy'); res.json(data); }
-    catch (err) { forwardError(res, err); }
-  });
-
-  router.patch('/privacy/last-seen', async (req, res) => {
-    try { const { data } = await wpp.patch('/privacy/last-seen', req.body); res.json(data); }
-    catch (err) { forwardError(res, err); }
-  });
-
-  router.patch('/privacy/profile-photo', async (req, res) => {
-    try { const { data } = await wpp.patch('/privacy/profile-photo', req.body); res.json(data); }
-    catch (err) { forwardError(res, err); }
-  });
-
-  router.patch('/privacy/status', async (req, res) => {
-    try { const { data } = await wpp.patch('/privacy/status', req.body); res.json(data); }
-    catch (err) { forwardError(res, err); }
-  });
-
-  router.patch('/privacy/online', async (req, res) => {
-    try { const { data } = await wpp.patch('/privacy/online', req.body); res.json(data); }
-    catch (err) { forwardError(res, err); }
-  });
-
-  router.patch('/privacy/groups-add', async (req, res) => {
-    try { const { data } = await wpp.patch('/privacy/groups-add', req.body); res.json(data); }
-    catch (err) { forwardError(res, err); }
+  router.all('/privacy*', (req, res) => {
+    res.status(501).json({ error: 'Privacy settings not available in this API version' });
   });
 
   // ── Messages — extra types ───────────────────────────────────────────────────
