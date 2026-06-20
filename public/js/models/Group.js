@@ -27,8 +27,9 @@ export function fromApiGroup(raw) {
 
 export function fromApiParticipant(raw) {
   if (typeof raw === 'string') return { id: raw, phone: null, role: null };
-  const phone = raw.phone
-    ? raw.phone.replace('@s.whatsapp.net', '').replace('@lid', '')
+  const rawPhone = raw.phone || raw.phoneNumber;
+  const phone = rawPhone
+    ? rawPhone.replace('@s.whatsapp.net', '').replace('@lid', '')
     : null;
   return {
     id:    raw.id,
