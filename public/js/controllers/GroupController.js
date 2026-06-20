@@ -65,7 +65,7 @@ function renderParticipants(participants, chatId) {
   list.innerHTML = '';
   participants.forEach(p => {
     const jid  = p.id;
-    const name = jid.replace('@s.whatsapp.net', '').replace('@g.us', '');
+    const name = p.phone || jid.replace('@s.whatsapp.net', '').replace('@lid', '').replace('@g.us', '');
     const hue  = nameToHue(name);
     const item = document.createElement('div');
     item.className = 'participant-item';

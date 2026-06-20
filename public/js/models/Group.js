@@ -26,9 +26,13 @@ export function fromApiGroup(raw) {
 }
 
 export function fromApiParticipant(raw) {
-  if (typeof raw === 'string') return { id: raw, role: null };
+  if (typeof raw === 'string') return { id: raw, phone: null, role: null };
+  const phone = raw.phone
+    ? raw.phone.replace('@s.whatsapp.net', '').replace('@lid', '')
+    : null;
   return {
-    id:   raw.id,
-    role: raw.admin || raw.role || null,
+    id:    raw.id,
+    phone,
+    role:  raw.admin || raw.role || null,
   };
 }

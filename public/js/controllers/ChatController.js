@@ -26,7 +26,19 @@ export async function openChat(chatId) {
   state.activeChatId = chatId;
   state.unread[chatId] = 0;
 
-  const chat = state.chats.find(c => c.id === chatId) || { id: chatId, name: chatId };
+  let chat = state.chats.find(c => c.id === chatId);
+  if (!chat) {
+    chat = { id: chatId, name: chatId };
+    // try to resolve name for groups not in chat list
+    if (isGroup(chatId)) {
+      try {
+        const { GroupService } = await import('../services/GroupService.js');
+        const g = await GroupService.get(chatId);
+        if (g?.subject) chat.name = g.subject;
+      } catch {}
+    }
+    state.chats.push(chat);
+  }
 
   // reveal chat UI
   document.getElementById('chat-placeholder').style.display = 'none';
