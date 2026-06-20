@@ -181,7 +181,23 @@ html, body { height: 100%; font-family: "Segoe UI", system-ui, sans-serif; backg
 .ticks.delivered { color: var(--tick-grey); }
 .ticks.read      { color: var(--tick-blue); }
 
-.bubble.deleted { opacity: 0.5; font-style: italic; }
+.bubble.deleted { opacity: 0.5; }
+
+.deleted-msg {
+  display: flex; align-items: center; gap: 6px;
+  font-style: italic; opacity: 0.7;
+}
+.deleted-msg svg { flex-shrink: 0; }
+
+.doc-link {
+  display: flex; align-items: center; gap: 6px;
+  color: var(--accent); text-decoration: none;
+}
+.doc-link:hover { text-decoration: underline; }
+
+.poll-question {
+  display: flex; align-items: center; gap: 6px;
+}
 .edited-label { font-size: 11px; color: rgba(233,237,239,0.5); margin-left: 4px; }
 
 /* reactions row below bubble */

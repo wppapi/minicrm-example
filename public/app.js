@@ -2,6 +2,15 @@
 //  miniCRM — WPP API frontend
 // ─────────────────────────────────────────────
 
+// Inline Lucide SVGs — no build step or CDN needed
+const ICONS = {
+  user:        `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+  users:       `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  fileText:    `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`,
+  barChart:    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
+  slash:       `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>`,
+};
+
 const socket = io();
 
 // ── State ──────────────────────────────────────
@@ -134,7 +143,7 @@ function buildChatItem(chat) {
   div.innerHTML = `
     <div class="chat-avatar">
       ${avatarHtml(chat)}
-      ${group ? '<span class="group-badge">👥</span>' : ''}
+      ${group ? `<span class="group-badge">${ICONS.users}</span>` : ''}
     </div>
     <div class="chat-info">
       <div class="chat-info-top">
@@ -215,7 +224,7 @@ function buildGroup(msg, chatId) {
   // react button
   const btnReact = document.createElement('button');
   btnReact.className = 'btn-react';
-  btnReact.textContent = '😊';
+  btnReact.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`;
   btnReact.title = 'React';
   btnReact.addEventListener('click', e => {
     e.stopPropagation();
@@ -254,7 +263,7 @@ function buildBubble(msg, chatId) {
   }
 
   if (msg.deleted) {
-    inner += `<em style="opacity:.6">This message was deleted</em>`;
+    inner += `<span class="deleted-msg">${ICONS.slash} This message was deleted</span>`;
   } else {
     inner += renderContent(msg, chatId);
   }
@@ -292,8 +301,8 @@ function renderContent(msg, chatId) {
     case 'ptt':
       return `<audio controls src="/api/media/${enc(chatId)}/${msg.id}"></audio>`;
     case 'document':
-      return `<a href="/api/media/${enc(chatId)}/${msg.id}" download style="color:var(--accent)">
-                📄 ${esc(msg.fileName || 'Document')}
+      return `<a href="/api/media/${enc(chatId)}/${msg.id}" download class="doc-link">
+                ${ICONS.fileText} ${esc(msg.fileName || 'Document')}
               </a>`;
     case 'sticker':
       return `<img class="msg-img" src="/api/media/${enc(chatId)}/${msg.id}" style="width:120px" alt="sticker" />`;
@@ -315,7 +324,7 @@ function renderPoll(msg) {
       <div class="poll-label"><span>${esc(o.name)}</span><span class="poll-pct">${pct}%</span></div>
     </div>`;
   }).join('');
-  return `<div class="poll-question">📊 ${esc(msg.pollQuestion || 'Poll')}</div>${optionsHtml}`;
+  return `<div class="poll-question">${ICONS.barChart} ${esc(msg.pollQuestion || 'Poll')}</div>${optionsHtml}`;
 }
 
 // ── Reactions ─────────────────────────────────────
@@ -482,7 +491,9 @@ function loadAvatar(contactId, container) {
 }
 
 function avatarHtml(chat) {
-  const name = chat?.name || chat?.id || '?';
+  if (!chat) return ICONS.user;
+  const name = chat?.name || chat?.id || '';
+  if (!name) return ICONS.user;
   return `<span>${esc(name.charAt(0).toUpperCase())}</span>`;
 }
 
@@ -538,7 +549,7 @@ socket.on('message-deleted', ({ data }) => {
   const bubble = document.querySelector(`.bubble[data-msg-id="${data.id}"]`);
   if (bubble) {
     bubble.classList.add('deleted');
-    bubble.innerHTML = `<em style="opacity:.6">This message was deleted</em>
+    bubble.innerHTML = `<span class="deleted-msg">${ICONS.slash} This message was deleted</span>
       <span class="meta">${formatTime(data.timestamp)}</span>`;
   }
 });

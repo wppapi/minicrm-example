@@ -21,11 +21,15 @@
   <!-- ── Incoming call modal ── -->
   <div id="call-modal" class="modal hidden">
     <div class="modal-box call-box">
-      <div class="call-avatar" id="call-avatar">📞</div>
+      <div class="call-avatar" id="call-avatar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.99 8.72 19.79 19.79 0 0 1 1.92 0a2 2 0 0 1 1.99-2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 7.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      </div>
       <p id="call-from">Unknown</p>
       <p class="modal-hint">Incoming call</p>
       <div class="call-actions">
-        <button id="btn-reject-call" class="btn-call reject">✕</button>
+        <button id="btn-reject-call" class="btn-call reject">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
     </div>
   </div>
@@ -61,9 +65,13 @@
   <aside id="sidebar">
     <div id="sidebar-header">
       <h1>miniCRM</h1>
-      <div style="display:flex;align-items:center;gap:10px">
-        <button id="btn-new-group" class="btn-icon" title="New group">👥</button>
-        <button id="btn-accept-invite" class="btn-icon" title="Join group by invite link">🔗</button>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button id="btn-new-group" class="btn-icon" title="New group">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </button>
+        <button id="btn-accept-invite" class="btn-icon" title="Join group by invite link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        </button>
         <div id="conn-status" class="conn-dot disconnected" title="Disconnected"></div>
       </div>
     </div>
@@ -77,19 +85,24 @@
   <main id="chat-panel">
 
     <div id="chat-placeholder">
-      <div class="ph-icon">💬</div>
+      <div class="ph-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
       <p>Select a conversation to start</p>
     </div>
 
     <div id="chat-header" class="hidden">
-      <div class="chat-avatar" id="header-avatar">👤</div>
+      <div class="chat-avatar" id="header-avatar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
       <div class="header-info" style="flex:1">
         <div id="header-name"></div>
         <div id="header-status"></div>
         <div id="header-participants"></div>
       </div>
-      <!-- group info button — only visible for groups -->
-      <button id="btn-group-info" class="btn-icon hidden" title="Group info">ℹ️</button>
+      <button id="btn-group-info" class="btn-icon hidden" title="Group info">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </button>
     </div>
 
     <div id="messages" class="hidden"></div>
@@ -110,47 +123,60 @@
         <div class="reply-label">Replying to</div>
         <div id="reply-text"></div>
       </div>
-      <button id="reply-cancel">✕</button>
+      <button id="reply-cancel" class="btn-icon-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
 
     <!-- file preview -->
     <div id="file-preview" class="hidden">
       <div id="file-preview-content"></div>
-      <button id="file-cancel">✕</button>
+      <button id="file-cancel" class="btn-icon-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
 
     <!-- input bar -->
     <div id="input-bar" class="hidden">
       <label id="btn-attach" class="btn-icon" title="Attach file">
-        📎
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
         <input id="file-input" type="file" accept="image/*,video/*,application/pdf,.doc,.docx,.xls,.xlsx" hidden />
       </label>
-      <button id="btn-audio" class="btn-icon" title="Record audio">🎤</button>
+      <button id="btn-audio" class="btn-icon" title="Record audio">
+        <svg id="icon-mic" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
       <textarea id="message-input" rows="1" placeholder="Type a message"></textarea>
-      <button id="btn-send" class="btn-icon send" title="Send">➤</button>
+      <button id="btn-send" class="btn-icon send" title="Send">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
     </div>
 
   </main>
 
-  <!-- ── Group info panel (slides in from right) ── -->
+  <!-- ── Group info panel ── -->
   <aside id="group-panel" class="hidden">
     <div id="group-panel-header">
-      <button id="btn-close-group-panel" class="btn-icon">✕</button>
+      <button id="btn-close-group-panel" class="btn-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
       <span>Group Info</span>
     </div>
 
     <div id="group-panel-body">
 
       <div class="gp-avatar-wrap">
-        <div class="chat-avatar gp-avatar" id="gp-avatar">👥</div>
+        <div class="chat-avatar gp-avatar" id="gp-avatar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
       </div>
 
-      <!-- name -->
       <div class="gp-section">
         <label class="gp-label">Group name</label>
         <div class="gp-editable-row">
           <span id="gp-name"></span>
-          <button id="btn-edit-name" class="btn-icon-sm" title="Edit name">✏️</button>
+          <button id="btn-edit-name" class="btn-icon-sm" title="Edit name">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
         </div>
         <div id="gp-name-edit" class="hidden">
           <input id="gp-name-input" class="field-input" type="text" maxlength="100" />
@@ -161,12 +187,13 @@
         </div>
       </div>
 
-      <!-- description -->
       <div class="gp-section">
         <label class="gp-label">Description</label>
         <div class="gp-editable-row">
           <span id="gp-description" class="gp-muted">No description</span>
-          <button id="btn-edit-desc" class="btn-icon-sm" title="Edit description">✏️</button>
+          <button id="btn-edit-desc" class="btn-icon-sm" title="Edit description">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
         </div>
         <div id="gp-desc-edit" class="hidden">
           <textarea id="gp-desc-input" class="field-input" rows="3" maxlength="512"></textarea>
@@ -177,7 +204,6 @@
         </div>
       </div>
 
-      <!-- settings -->
       <div class="gp-section">
         <label class="gp-label">Settings</label>
         <div class="gp-setting-row">
@@ -189,7 +215,6 @@
         </div>
       </div>
 
-      <!-- invite link -->
       <div class="gp-section">
         <label class="gp-label">Invite link</label>
         <div class="gp-invite-row">
@@ -200,7 +225,6 @@
         </div>
       </div>
 
-      <!-- add participant -->
       <div class="gp-section">
         <label class="gp-label">Add participants</label>
         <div class="gp-invite-row">
@@ -209,13 +233,11 @@
         </div>
       </div>
 
-      <!-- participants list -->
       <div class="gp-section">
         <label class="gp-label" id="gp-participants-label">Participants</label>
         <div id="gp-participants-list"></div>
       </div>
 
-      <!-- danger zone -->
       <div class="gp-section gp-danger-zone">
         <button id="btn-leave-group" class="btn-danger btn-block">Leave group</button>
       </div>
