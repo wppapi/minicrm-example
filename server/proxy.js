@@ -647,13 +647,9 @@ function createProxyRouter() {
     catch (err) { forwardError(res, err); }
   });
 
-  router.patch('/profile/picture', upload.single('file'), async (req, res) => {
-    try {
-      const form = new FormData();
-      if (req.file) form.append('file', req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
-      const { data } = await wpp.patch('/profile/picture', form, { headers: form.getHeaders() });
-      res.json(data);
-    } catch (err) { forwardError(res, err); }
+  router.patch('/profile/picture', async (req, res) => {
+    try { const { data } = await wpp.patch('/profile/picture', { url: req.body.url }); res.json(data); }
+    catch (err) { forwardError(res, err); }
   });
 
   // ── Status (stories) ─────────────────────────────────────────────────────────

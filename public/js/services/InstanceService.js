@@ -1,4 +1,4 @@
-import { get, post, patch, upload } from '../api/client.js';
+import { get, post, patch } from '../api/client.js';
 
 export const InstanceService = {
   async getStatus() {
@@ -29,9 +29,7 @@ export const InstanceService = {
     return patch('/instance/profile', fields);
   },
 
-  async updateProfilePicture(file) {
-    const form = new FormData();
-    form.append('file', file, file.name);
-    return upload('/instance/profile/picture', form);
+  async updateProfilePicture(url) {
+    return patch('/profile/picture', { url });
   },
 };

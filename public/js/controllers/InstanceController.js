@@ -1,6 +1,41 @@
 import { state }           from '../state.js';
 import { InstanceService } from '../services/InstanceService.js';
-import { showToast }        from '../utils.js';
+import { avatarColors, showToast } from '../utils.js';
+
+export async function loadProfile() {
+  try {
+    const p = await InstanceService.getProfile();
+    if (!p) return;
+    document.getElementById('instance-profile-name').textContent = p.name || '—';
+    document.getElementById('instance-profile-status').textContent = p.status || '—';
+    document.getElementById('instance-name-input').value = p.name || '';
+    document.getElementById('instance-status-input').value = p.status || '';
+    const av = document.getElementById('instance-avatar');
+    if (av) {
+      const { bg, fg } = avatarColors(p.name || '?');
+      av.style.background = bg; av.style.color = fg;
+      av.textContent = (p.name || '?').charAt(0).toUpperCase();
+      if (p.profilePictureUrl) {
+        const img = new Image();
+        img.onload = () => { av.style.backgroundImage = `url(${p.profilePictureUrl})`; av.style.backgroundSize = 'cover'; av.textContent = ''; };
+        img.src = p.profilePictureUrl;
+      }
+    }
+  } catch {}
+}
+
+export async function saveProfile() {
+  const name   = document.getElementById('instance-name-input').value.trim();
+  const status = document.getElementById('instance-status-input').value.trim();
+  const photo  = document.getElementById('instance-photo-input').value.trim();
+  try {
+    if (name || status) await InstanceService.updateProfile({ name, status });
+    if (photo) await InstanceService.updateProfilePicture(photo);
+    showToast('Profile updated');
+    await loadProfile();
+    document.getElementById('instance-photo-input').value = '';
+  } catch (e) { showToast(`Error: ${e.message}`); }
+}
 
 export async function refreshStatus() {
   const el = document.getElementById('instance-status-display');

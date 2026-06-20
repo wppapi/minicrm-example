@@ -248,7 +248,7 @@ function bindEvents() {
         btn.classList.add('active');
         if (name === 'business') Business.loadPanel().catch(() => {});
         if (name === 'privacy')  Privacy.loadPanel().catch(() => {});
-        if (name === 'instance') Instance.refreshStatus().catch(() => {});
+        if (name === 'instance') { Instance.refreshStatus().catch(() => {}); Instance.loadProfile().catch(() => {}); }
       }
     });
   });
@@ -267,6 +267,7 @@ function bindEvents() {
   $('btn-save-privacy').addEventListener('click', Privacy.save);
 
   // Instance panel
+  $('btn-save-profile').addEventListener('click', Instance.saveProfile);
   $('btn-refresh-status').addEventListener('click', Instance.refreshStatus);
   $('btn-fetch-qr').addEventListener('click', Instance.fetchQr);
   $('btn-restart-instance').addEventListener('click', Instance.restart);
