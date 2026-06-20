@@ -26,7 +26,7 @@ export function appendMessage(chatId, msg, container, callbacks = {}) {
 
 // ── Group (message + actions toolbar + reactions row) ────
 
-export function buildGroup(msg, chatId, { onReply, onReact, onRevoke, onEdit } = {}) {
+export function buildGroup(msg, chatId, { onReply, onReact, onRevoke } = {}) {
   const group = document.createElement('div');
   group.className = `message-group ${msg.fromMe ? 'out' : 'in'}`;
   group.dataset.msgId = msg.id;
@@ -54,15 +54,6 @@ export function buildGroup(msg, chatId, { onReply, onReact, onRevoke, onEdit } =
     toolbar.appendChild(btnReact);
 
     if (msg.fromMe) {
-      if (msg.type === 'text') {
-        const btnEdit = document.createElement('button');
-        btnEdit.className = 'msg-action-btn';
-        btnEdit.title = 'Edit';
-        btnEdit.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
-        btnEdit.addEventListener('click', e => { e.stopPropagation(); onEdit?.(msg, bubble); });
-        toolbar.appendChild(btnEdit);
-      }
-
       const btnDel = document.createElement('button');
       btnDel.className = 'msg-action-btn danger';
       btnDel.title = 'Delete for everyone';

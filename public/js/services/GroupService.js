@@ -33,10 +33,8 @@ export const GroupService = {
     return patch(`/groups/${enc(groupId)}/settings`, { announce });
   },
 
-  async updatePhoto(groupId, file) {
-    const form = new FormData();
-    form.append('file', file, file.name);
-    return upload(`/groups/${enc(groupId)}/photo`, form);
+  async updatePhoto(groupId, url) {
+    return patch(`/groups/${enc(groupId)}/photo`, { url });
   },
 
   async setEphemeral(groupId, seconds) {

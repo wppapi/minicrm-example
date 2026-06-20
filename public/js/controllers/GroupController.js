@@ -136,6 +136,25 @@ export function bindGroupPanelEvents() {
   document.getElementById('btn-close-group-panel')
     .addEventListener('click', () => document.getElementById('group-panel').classList.add('hidden'));
 
+  // edit photo
+  document.getElementById('btn-edit-photo').addEventListener('click', () => {
+    document.getElementById('gp-photo-edit').classList.remove('hidden');
+    document.getElementById('gp-photo-url').focus();
+  });
+  document.getElementById('btn-cancel-photo').addEventListener('click', () =>
+    document.getElementById('gp-photo-edit').classList.add('hidden')
+  );
+  document.getElementById('btn-save-photo').addEventListener('click', async () => {
+    const url = document.getElementById('gp-photo-url').value.trim();
+    if (!url) return;
+    try {
+      await GroupService.updatePhoto(state.activeChatId, url);
+      document.getElementById('gp-photo-edit').classList.add('hidden');
+      document.getElementById('gp-photo-url').value = '';
+      showToast('Photo updated');
+    } catch (e) { showToast(e.message); }
+  });
+
   // edit name
   document.getElementById('btn-edit-name').addEventListener('click', () => {
     document.getElementById('gp-name-input').value = document.getElementById('gp-name').textContent;

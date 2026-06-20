@@ -454,17 +454,6 @@
       </button>
     </div>
 
-    <!-- edit preview -->
-    <div id="edit-preview" class="hidden">
-      <div class="reply-content">
-        <div class="reply-label">Editing message</div>
-        <div id="edit-text"></div>
-      </div>
-      <button id="edit-cancel" class="btn-icon-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-
     <!-- file preview -->
     <div id="file-preview" class="hidden">
       <div id="file-preview-content"></div>
@@ -502,7 +491,15 @@
       <span>Group Info</span>
     </div>
     <div id="group-panel-body">
-      <div class="gp-avatar-wrap"><div class="chat-avatar gp-avatar" id="gp-avatar"></div></div>
+      <div class="gp-avatar-wrap">
+        <div class="chat-avatar gp-avatar" id="gp-avatar"></div>
+        <div id="gp-photo-edit" class="hidden" style="margin-top:8px;display:flex;gap:4px;align-items:center;">
+          <input id="gp-photo-url" class="field-input" type="url" placeholder="https://..." style="flex:1;font-size:12px;" />
+          <button id="btn-save-photo" class="btn-primary btn-sm">Set</button>
+          <button id="btn-cancel-photo" class="btn-secondary btn-sm">✕</button>
+        </div>
+        <button id="btn-edit-photo" class="btn-secondary btn-sm" style="margin-top:4px;font-size:11px;">Change photo</button>
+      </div>
       <div class="gp-section">
         <label class="gp-label">Group name</label>
         <div class="gp-editable-row">

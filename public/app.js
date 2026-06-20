@@ -22,7 +22,6 @@ const messageCallbacks = {
   onReply:  msg => Send.setReply(msg),
   onReact:  (msgId, chatId, anchor) => showReactionPicker(msgId, chatId, anchor),
   onRevoke: (e, msg, chatId) => Send.revokeMessage(e, msg, chatId),
-  onEdit:   (msg, bubble) => Send.startEdit(msg, bubble),
 };
 
 // ── Init ──────────────────────────────────────────────────
@@ -53,7 +52,6 @@ function bindEvents() {
 
   // Reply / edit / file strip
   $('reply-cancel').addEventListener('click', Send.clearReply);
-  $('edit-cancel').addEventListener('click', Send.clearEdit);
   $('file-cancel').addEventListener('click', Send.clearFile);
   $('file-input').addEventListener('change', e => Send.handleFileSelected(e.target.files[0]));
 

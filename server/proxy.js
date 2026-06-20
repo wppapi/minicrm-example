@@ -223,12 +223,12 @@ function createProxyRouter() {
   });
 
   router.patch('/groups/:groupId/subject', async (req, res) => {
-    try { const { data } = await wpp.patch(`/groups/${req.params.groupId}/subject`, req.body); res.json(data); }
+    try { const { data } = await wpp.patch(`/groups/${req.params.groupId}`, { subject: req.body.subject }); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.patch('/groups/:groupId/description', async (req, res) => {
-    try { const { data } = await wpp.patch(`/groups/${req.params.groupId}/description`, req.body); res.json(data); }
+    try { const { data } = await wpp.patch(`/groups/${req.params.groupId}`, { description: req.body.description }); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
@@ -553,13 +553,9 @@ function createProxyRouter() {
     catch (err) { forwardError(res, err); }
   });
 
-  router.patch('/groups/:groupId/photo', upload.single('file'), async (req, res) => {
-    try {
-      const form = new FormData();
-      if (req.file) form.append('file', req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
-      const { data } = await wpp.patch(`/groups/${req.params.groupId}/photo`, form, { headers: form.getHeaders() });
-      res.json(data);
-    } catch (err) { forwardError(res, err); }
+  router.patch('/groups/:groupId/photo', async (req, res) => {
+    try { const { data } = await wpp.patch(`/groups/${req.params.groupId}/photo`, { url: req.body.url }); res.json(data); }
+    catch (err) { forwardError(res, err); }
   });
 
   router.patch('/groups/:groupId/ephemeral', async (req, res) => {
