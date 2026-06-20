@@ -47,37 +47,37 @@ function createProxyRouter() {
   });
 
   router.post('/chats/:chatId/read', async (req, res) => {
-    try { const { data } = await wpp.post(`/chats/${req.params.chatId}/read`); res.json(data); }
+    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/read`); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.post('/chats/:chatId/archive', async (req, res) => {
-    try { const { data } = await wpp.post(`/chats/${req.params.chatId}/archive`); res.json(data); }
+    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/archive`, { archived: true }); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.post('/chats/:chatId/unarchive', async (req, res) => {
-    try { const { data } = await wpp.post(`/chats/${req.params.chatId}/unarchive`); res.json(data); }
+    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/archive`, { archived: false }); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.post('/chats/:chatId/pin', async (req, res) => {
-    try { const { data } = await wpp.post(`/chats/${req.params.chatId}/pin`); res.json(data); }
+    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/pin`, { pinned: true }); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.post('/chats/:chatId/unpin', async (req, res) => {
-    try { const { data } = await wpp.post(`/chats/${req.params.chatId}/unpin`); res.json(data); }
+    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/pin`, { pinned: false }); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.post('/chats/:chatId/mute', async (req, res) => {
-    try { const { data } = await wpp.post(`/chats/${req.params.chatId}/mute`, req.body); res.json(data); }
+    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/mute`, req.body); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.post('/chats/:chatId/unmute', async (req, res) => {
-    try { const { data } = await wpp.post(`/chats/${req.params.chatId}/unmute`); res.json(data); }
+    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/mute`, { muted: false }); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
@@ -108,7 +108,7 @@ function createProxyRouter() {
   });
 
   router.get('/contacts/check/:number', async (req, res) => {
-    try { const { data } = await wpp.get(`/contacts/check/${req.params.number}`); res.json(data); }
+    try { const { data } = await wpp.post('/contacts/check', { phone: req.params.number }); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
@@ -217,6 +217,11 @@ function createProxyRouter() {
     catch (err) { forwardError(res, err); }
   });
 
+  router.patch('/groups/:groupId', async (req, res) => {
+    try { const { data } = await wpp.patch(`/groups/${req.params.groupId}`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
   router.patch('/groups/:groupId/subject', async (req, res) => {
     try { const { data } = await wpp.patch(`/groups/${req.params.groupId}/subject`, req.body); res.json(data); }
     catch (err) { forwardError(res, err); }
@@ -233,27 +238,27 @@ function createProxyRouter() {
   });
 
   router.post('/groups/:groupId/participants', async (req, res) => {
-    try { const { data } = await wpp.post(`/groups/${req.params.groupId}/participants`, req.body); res.json(data); }
+    try { const { data } = await wpp.post(`/groups/${req.params.groupId}/participants/add`, req.body); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.delete('/groups/:groupId/participants', async (req, res) => {
-    try { const { data } = await wpp.delete(`/groups/${req.params.groupId}/participants`, { data: req.body }); res.json(data); }
+    try { const { data } = await wpp.post(`/groups/${req.params.groupId}/participants/remove`, req.body); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.post('/groups/:groupId/admins', async (req, res) => {
-    try { const { data } = await wpp.post(`/groups/${req.params.groupId}/admins`, req.body); res.json(data); }
+    try { const { data } = await wpp.post(`/groups/${req.params.groupId}/participants/promote`, req.body); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.delete('/groups/:groupId/admins', async (req, res) => {
-    try { const { data } = await wpp.delete(`/groups/${req.params.groupId}/admins`, { data: req.body }); res.json(data); }
+    try { const { data } = await wpp.post(`/groups/${req.params.groupId}/participants/demote`, req.body); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.post('/groups/:groupId/leave', async (req, res) => {
-    try { const { data } = await wpp.post(`/groups/${req.params.groupId}/leave`); res.json(data); }
+    try { const { data } = await wpp.delete(`/groups/${req.params.groupId}/leave`); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
@@ -310,7 +315,7 @@ function createProxyRouter() {
   });
 
   router.put('/business/hours', async (req, res) => {
-    try { const { data } = await wpp.put('/business/hours', req.body); res.json(data); }
+    try { const { data } = await wpp.patch('/business/hours', req.body); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
@@ -474,12 +479,12 @@ function createProxyRouter() {
   });
 
   router.post('/send/otp', async (req, res) => {
-    try { const { data } = await wpp.post('/messages/otp', req.body); res.json(data); }
+    try { const { data } = await wpp.post('/messages/otp-button', req.body); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
   router.post('/send/pix', async (req, res) => {
-    try { const { data } = await wpp.post('/messages/pix', req.body); res.json(data); }
+    try { const { data } = await wpp.post('/messages/pix-button', req.body); res.json(data); }
     catch (err) { forwardError(res, err); }
   });
 
@@ -503,9 +508,24 @@ function createProxyRouter() {
     catch (err) { forwardError(res, err); }
   });
 
-  router.get('/messages/:messageId', async (req, res) => {
-    try { const { data } = await wpp.get(`/messages/${req.params.messageId}`); res.json(data); }
+  router.get('/messages/:chatId/:messageId', async (req, res) => {
+    try { const { data } = await wpp.get(`/messages/${req.params.chatId}/messages/${req.params.messageId}`); res.json(data); }
     catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/ai-assistant', async (req, res) => {
+    try { const { data } = await wpp.post('/messages/ai-assistant', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/upload', upload.single('file'), async (req, res) => {
+    try {
+      const form = new FormData();
+      Object.entries(req.body).forEach(([k, v]) => form.append(k, v));
+      if (req.file) form.append('file', req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
+      const { data } = await wpp.post('/messages/upload', form, { headers: form.getHeaders() });
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
   });
 
   // ── Chats — extras ────────────────────────────────────────────────────────────

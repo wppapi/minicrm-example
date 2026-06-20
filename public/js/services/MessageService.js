@@ -27,8 +27,8 @@ export const MessageService = {
     return del(`/messages/${enc(chatId)}/${enc(messageId)}`);
   },
 
-  async get(messageId) {
-    return get(`/messages/${enc(messageId)}`);
+  async get(chatId, messageId) {
+    return get(`/messages/${enc(chatId)}/${enc(messageId)}`);
   },
 
   // ── Presence ──────────────────────────────────────────────────────────────
@@ -184,6 +184,17 @@ export const MessageService = {
 
   async sendAiText(to, prompt, context = '') {
     return post('/send/ai-text', { to, prompt, context });
+  },
+
+  async sendAiAssistant(to, message) {
+    return post('/send/ai-assistant', { to, message });
+  },
+
+  async uploadMedia(file, type) {
+    const form = new FormData();
+    form.append('file', file, file.name);
+    form.append('type', type);
+    return upload('/send/upload', form);
   },
 
   // ── Bulk ──────────────────────────────────────────────────────────────────

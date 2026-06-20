@@ -17,6 +17,10 @@ export const GroupService = {
     return post('/groups', { name, participants });
   },
 
+  async update(groupId, fields) {
+    return patch(`/groups/${enc(groupId)}`, fields);
+  },
+
   async updateSubject(groupId, subject) {
     return patch(`/groups/${enc(groupId)}/subject`, { subject });
   },
