@@ -16,6 +16,20 @@ export async function loadChats() {
     console.error('Failed to load chats:', e);
     state.chats = [];
   }
+
+  // Enrich group names — /chats returns name:null for groups
+  const groupChats = state.chats.filter(c => c.isGroup && (!c.name || c.name === c.id));
+  if (groupChats.length > 0) {
+    try {
+      const { GroupService } = await import('../services/GroupService.js');
+      const groups = await GroupService.list();
+      const byId = Object.fromEntries(groups.map(g => [g.id, g]));
+      groupChats.forEach(c => {
+        if (byId[c.id]?.subject) c.name = byId[c.id].subject;
+      });
+    } catch {}
+  }
+
   renderChatList(
     document.getElementById('chat-list'),
     { onOpen: openChat, onContext: _callbacks.onChatContext }
@@ -29,15 +43,15 @@ export async function openChat(chatId) {
   let chat = state.chats.find(c => c.id === chatId);
   if (!chat) {
     chat = { id: chatId, name: chatId };
-    // try to resolve name for groups not in chat list
-    if (isGroup(chatId)) {
-      try {
-        const { GroupService } = await import('../services/GroupService.js');
-        const g = await GroupService.get(chatId);
-        if (g?.subject) chat.name = g.subject;
-      } catch {}
-    }
     state.chats.push(chat);
+  }
+  // Resolve group name when it still shows the raw ID
+  if (isGroup(chatId) && (!chat.name || chat.name === chatId)) {
+    try {
+      const { GroupService } = await import('../services/GroupService.js');
+      const g = await GroupService.get(chatId);
+      if (g?.subject) chat.name = g.subject;
+    } catch {}
   }
 
   // reveal chat UI
