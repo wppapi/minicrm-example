@@ -21,12 +21,13 @@ const state = {
   reactions: {},      // { [chatId]: { [msgId]: { [emoji]: count } } }
   unread: {},         // { [chatId]: number }
   quotedMessage: null,
-  pendingFile: null,  // { file: File, previewUrl: string, type: string }
+  pendingFile: null,
   mediaRecorder: null,
   audioChunks: [],
   isRecording: false,
-  reactionTarget: null, // { msgId, chatId, anchorEl }
+  reactionTarget: null,
   connected: false,
+  filter: 'all',      // 'all' | 'unread' | 'groups'
 };
 
 // ── DOM refs ────────────────────────────────────
@@ -127,7 +128,10 @@ async function loadChats() {
 
 function renderChatList(chats) {
   els.chatList.innerHTML = '';
-  chats.forEach(chat => {
+  let list = chats;
+  if (state.filter === 'unread') list = chats.filter(c => (state.unread[c.id] || 0) > 0);
+  if (state.filter === 'groups') list = chats.filter(c => isGroup(c.id));
+  list.forEach(chat => {
     const item = buildChatItem(chat);
     item.addEventListener('click', () => openChat(chat.id));
     els.chatList.appendChild(item);
@@ -140,22 +144,34 @@ function buildChatItem(chat) {
   const div = document.createElement('div');
   div.className = 'chat-item' + (chat.id === state.activeChatId ? ' active' : '');
   div.dataset.chatId = chat.id;
+
+  const { bg, fg } = avatarColors(chat.name || chat.id);
+  const initial = (chat.name || chat.id || '?').charAt(0).toUpperCase();
+  const timeStr = chatTimeLabel(chat.lastMessageTime);
+  const hasUnread = unread > 0;
+
   div.innerHTML = `
-    <div class="chat-avatar">
-      ${avatarHtml(chat)}
+    <div class="chat-avatar" style="background:${bg};color:${fg}">
+      ${initial}
       ${group ? `<span class="group-badge">${ICONS.users}</span>` : ''}
     </div>
     <div class="chat-info">
       <div class="chat-info-top">
         <span class="chat-name">${esc(chat.name || chat.id)}</span>
-        <span class="chat-time">${formatTime(chat.lastMessageTime)}</span>
+        <span class="chat-time ${hasUnread ? 'unread-time' : ''}">${timeStr}</span>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <span class="chat-preview">${esc(chat.lastMessage || '')}</span>
-        ${unread ? `<span class="chat-unread">${unread}</span>` : ''}
+      <div class="chat-bottom">
+        <span class="chat-preview">${buildPreview(chat)}</span>
+        ${hasUnread ? `<span class="chat-unread">${unread}</span>` : ''}
       </div>
     </div>`;
   return div;
+}
+
+function buildPreview(chat) {
+  if (!chat.lastMessage) return '';
+  const sender = chat.lastSender ? `<span class="preview-sender">${esc(chat.lastSender)}: </span>` : '';
+  return sender + esc(chat.lastMessage);
 }
 
 // ── Open chat ────────────────────────────────────
@@ -171,7 +187,11 @@ async function openChat(chatId) {
   els.inputBar.classList.remove('hidden');
   els.app.classList.add('chat-open');
 
-  els.headerAvatar.innerHTML = avatarHtml(chat);
+  const { bg, fg } = avatarColors(chat?.name || chatId);
+  const initial = (chat?.name || chatId || '?').charAt(0).toUpperCase();
+  els.headerAvatar.style.background = bg;
+  els.headerAvatar.style.color = fg;
+  els.headerAvatar.textContent = initial;
   els.headerName.textContent = chat?.name || chatId;
   els.headerStatus.textContent = '';
 
@@ -490,11 +510,37 @@ function loadAvatar(contactId, container) {
   img.src = `/api/contacts/${enc(contactId)}/avatar`;
 }
 
+// Generates a consistent background/foreground color pair from a string
+function avatarColors(str) {
+  const PALETTES = [
+    { bg: '#d9534f', fg: '#fff' }, { bg: '#5cb85c', fg: '#fff' },
+    { bg: '#5bc0de', fg: '#fff' }, { bg: '#f0ad4e', fg: '#fff' },
+    { bg: '#9b59b6', fg: '#fff' }, { bg: '#1abc9c', fg: '#fff' },
+    { bg: '#e67e22', fg: '#fff' }, { bg: '#3498db', fg: '#fff' },
+    { bg: '#e91e8c', fg: '#fff' }, { bg: '#00897b', fg: '#fff' },
+    { bg: '#8e44ad', fg: '#fff' }, { bg: '#c0392b', fg: '#fff' },
+  ];
+  let h = 0;
+  for (let i = 0; i < (str || '').length; i++) h = str.charCodeAt(i) + ((h << 5) - h);
+  return PALETTES[Math.abs(h) % PALETTES.length];
+}
+
 function avatarHtml(chat) {
   if (!chat) return ICONS.user;
   const name = chat?.name || chat?.id || '';
   if (!name) return ICONS.user;
   return `<span>${esc(name.charAt(0).toUpperCase())}</span>`;
+}
+
+// Time label for chat list: today shows HH:MM, this week shows day name, older shows date
+function chatTimeLabel(ts) {
+  if (!ts) return '';
+  const d = ts > 1e10 ? new Date(ts) : new Date(ts * 1000);
+  const now = new Date();
+  const diffDays = Math.floor((now - d) / 86400000);
+  if (diffDays === 0) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  if (diffDays < 7) return d.toLocaleDateString([], { weekday: 'short' });
+  return d.toLocaleDateString([], { day: '2-digit', month: '2-digit', year: '2-digit' });
 }
 
 // ── Socket.io — real-time events ──────────────────
@@ -662,11 +708,13 @@ socket.on('call', ({ data }) => {
 function updateChatPreview(chatId, msg) {
   const chat = state.chats.find(c => c.id === chatId);
   const preview = msg.text || `[${msg.type}]`;
+  const sender = isGroup(chatId) && msg.senderName ? msg.senderName : null;
   if (chat) {
     chat.lastMessage = preview;
     chat.lastMessageTime = msg.timestamp;
+    chat.lastSender = sender;
   } else {
-    state.chats.unshift({ id: chatId, name: chatId, lastMessage: preview, lastMessageTime: msg.timestamp });
+    state.chats.unshift({ id: chatId, name: chatId, lastMessage: preview, lastMessageTime: msg.timestamp, lastSender: sender });
   }
   refreshChatItem(chatId);
 }
@@ -690,6 +738,16 @@ function refreshChatItem(chatId) {
 els.searchInput.addEventListener('input', () => {
   const q = els.searchInput.value.toLowerCase();
   renderChatList(q ? state.chats.filter(c => (c.name || c.id).toLowerCase().includes(q)) : state.chats);
+});
+
+// ── Filter chips ──────────────────────────────────
+document.querySelectorAll('.filter-chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.filter = btn.dataset.filter;
+    document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderChatList(state.chats);
+  });
 });
 
 // ── Bind all events ───────────────────────────────
