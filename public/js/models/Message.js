@@ -33,7 +33,7 @@
 
 export function fromApiMessage(raw) {
   return {
-    id:           raw.id,
+    id:           raw.messageId || raw.id,
     type:         raw.type || 'text',
     text:         raw.text || raw.body || null,
     caption:      raw.caption || null,
