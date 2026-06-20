@@ -187,7 +187,7 @@ function createProxyRouter() {
 
   router.delete('/messages/:chatId/:messageId', async (req, res) => {
     try {
-      const { data } = await wpp.delete(`/messages/${req.params.messageId}`, { params: { to: req.params.chatId } });
+      const { data } = await wpp.delete(`/messages/${req.params.messageId}`, { params: { to: req.params.chatId, fromMe: 'true' } });
       res.json(data);
     } catch (err) { forwardError(res, err); }
   });
