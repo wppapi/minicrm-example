@@ -346,6 +346,532 @@ function createProxyRouter() {
     catch (err) { forwardError(res, err); }
   });
 
+  // ── Messages — extra types ───────────────────────────────────────────────────
+
+  router.post('/send/image', upload.single('file'), async (req, res) => {
+    try {
+      const form = new FormData();
+      Object.entries(req.body).forEach(([k, v]) => form.append(k, v));
+      if (req.file) form.append('file', req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
+      const { data } = await wpp.post('/messages/image', form, { headers: form.getHeaders() });
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/video', upload.single('file'), async (req, res) => {
+    try {
+      const form = new FormData();
+      Object.entries(req.body).forEach(([k, v]) => form.append(k, v));
+      if (req.file) form.append('file', req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
+      const { data } = await wpp.post('/messages/video', form, { headers: form.getHeaders() });
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/document', upload.single('file'), async (req, res) => {
+    try {
+      const form = new FormData();
+      Object.entries(req.body).forEach(([k, v]) => form.append(k, v));
+      if (req.file) form.append('file', req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
+      const { data } = await wpp.post('/messages/document', form, { headers: form.getHeaders() });
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/sticker', upload.single('file'), async (req, res) => {
+    try {
+      const form = new FormData();
+      Object.entries(req.body).forEach(([k, v]) => form.append(k, v));
+      if (req.file) form.append('file', req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
+      const { data } = await wpp.post('/messages/sticker', form, { headers: form.getHeaders() });
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/gif', upload.single('file'), async (req, res) => {
+    try {
+      const form = new FormData();
+      Object.entries(req.body).forEach(([k, v]) => form.append(k, v));
+      if (req.file) form.append('file', req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
+      const { data } = await wpp.post('/messages/gif', form, { headers: form.getHeaders() });
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/ptv', upload.single('file'), async (req, res) => {
+    try {
+      const form = new FormData();
+      Object.entries(req.body).forEach(([k, v]) => form.append(k, v));
+      if (req.file) form.append('file', req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
+      const { data } = await wpp.post('/messages/ptv', form, { headers: form.getHeaders() });
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/link', async (req, res) => {
+    try { const { data } = await wpp.post('/messages/link', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/forward', async (req, res) => {
+    try { const { data } = await wpp.post('/messages/forward', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/pin', async (req, res) => {
+    try { const { data } = await wpp.post('/messages/pin', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/poll-vote', async (req, res) => {
+    try { const { data } = await wpp.post('/messages/poll-vote', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/presence', async (req, res) => {
+    try { const { data } = await wpp.post('/messages/presence', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/bulk', async (req, res) => {
+    try { const { data } = await wpp.post('/messages/bulk', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/carousel', async (req, res) => {
+    try { const { data } = await wpp.post('/messages/carousel', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/cta-buttons', async (req, res) => {
+    try { const { data } = await wpp.post('/messages/cta-buttons', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/image-button', upload.single('file'), async (req, res) => {
+    try {
+      const form = new FormData();
+      Object.entries(req.body).forEach(([k, v]) => form.append(k, v));
+      if (req.file) form.append('file', req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
+      const { data } = await wpp.post('/messages/image-button', form, { headers: form.getHeaders() });
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/video-button', upload.single('file'), async (req, res) => {
+    try {
+      const form = new FormData();
+      Object.entries(req.body).forEach(([k, v]) => form.append(k, v));
+      if (req.file) form.append('file', req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
+      const { data } = await wpp.post('/messages/video-button', form, { headers: form.getHeaders() });
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/table', async (req, res) => {
+    try { const { data } = await wpp.post('/messages/table', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/otp', async (req, res) => {
+    try { const { data } = await wpp.post('/messages/otp', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/pix', async (req, res) => {
+    try { const { data } = await wpp.post('/messages/pix', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/product', async (req, res) => {
+    try { const { data } = await wpp.post('/messages/product', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/catalog', async (req, res) => {
+    try { const { data } = await wpp.post('/messages/catalog', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/ai-text', async (req, res) => {
+    try { const { data } = await wpp.post('/messages/ai-text', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/send/base64', async (req, res) => {
+    try { const { data } = await wpp.post('/messages/base64', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.get('/messages/:messageId', async (req, res) => {
+    try { const { data } = await wpp.get(`/messages/${req.params.messageId}`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  // ── Chats — extras ────────────────────────────────────────────────────────────
+
+  router.get('/chats/:chatId', async (req, res) => {
+    try { const { data } = await wpp.get(`/chats/${req.params.chatId}`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.patch('/chats/:chatId/expiration', async (req, res) => {
+    try { const { data } = await wpp.patch(`/chats/${req.params.chatId}/expiration`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  // ── Contacts — extras ─────────────────────────────────────────────────────────
+
+  router.get('/contacts', async (req, res) => {
+    try { const { data } = await wpp.get('/contacts'); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.get('/contacts/:phone/snapshot', async (req, res) => {
+    try { const { data } = await wpp.get(`/contacts/${req.params.phone}/snapshot`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.get('/contacts/:phone/status', async (req, res) => {
+    try { const { data } = await wpp.get(`/contacts/${req.params.phone}/status`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/contacts/:phone/report', async (req, res) => {
+    try { const { data } = await wpp.post(`/contacts/${req.params.phone}/report`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  // ── Groups — extras ───────────────────────────────────────────────────────────
+
+  router.get('/groups', async (req, res) => {
+    try { const { data } = await wpp.get('/groups'); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.get('/groups/:groupId/participants/pending', async (req, res) => {
+    try { const { data } = await wpp.get(`/groups/${req.params.groupId}/participants/pending`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.get('/groups/invite/:inviteCode/info', async (req, res) => {
+    try { const { data } = await wpp.get(`/groups/invite/${req.params.inviteCode}/info`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.patch('/groups/:groupId/photo', upload.single('file'), async (req, res) => {
+    try {
+      const form = new FormData();
+      if (req.file) form.append('file', req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
+      const { data } = await wpp.patch(`/groups/${req.params.groupId}/photo`, form, { headers: form.getHeaders() });
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.patch('/groups/:groupId/ephemeral', async (req, res) => {
+    try { const { data } = await wpp.patch(`/groups/${req.params.groupId}/ephemeral`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/groups/:groupId/participants/approve', async (req, res) => {
+    try { const { data } = await wpp.post(`/groups/${req.params.groupId}/participants/approve`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/groups/:groupId/participants/reject', async (req, res) => {
+    try { const { data } = await wpp.post(`/groups/${req.params.groupId}/participants/reject`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/groups/:groupId/mention-all', async (req, res) => {
+    try { const { data } = await wpp.post(`/groups/${req.params.groupId}/mention-all`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/groups/:groupId/send-list', async (req, res) => {
+    try { const { data } = await wpp.post(`/groups/${req.params.groupId}/send-list`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/groups/:groupId/invite/reset', async (req, res) => {
+    try { const { data } = await wpp.post(`/groups/${req.params.groupId}/invite/reset`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  // ── Business — extras ──────────────────────────────────────────────────────────
+
+  router.get('/business/products', async (req, res) => {
+    try { const { data } = await wpp.get('/business/products'); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/business/products', upload.single('image'), async (req, res) => {
+    try {
+      const form = new FormData();
+      Object.entries(req.body).forEach(([k, v]) => form.append(k, v));
+      if (req.file) form.append('image', req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
+      const { data } = await wpp.post('/business/products', form, { headers: form.getHeaders() });
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.patch('/business/products/:productId', async (req, res) => {
+    try { const { data } = await wpp.patch(`/business/products/${req.params.productId}`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.delete('/business/products/:productId', async (req, res) => {
+    try { const { data } = await wpp.delete(`/business/products/${req.params.productId}`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.get('/business/profile', async (req, res) => {
+    try { const { data } = await wpp.get('/business/profile'); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.patch('/business/profile', async (req, res) => {
+    try { const { data } = await wpp.patch('/business/profile', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.get('/business/categories', async (req, res) => {
+    try { const { data } = await wpp.get('/business/categories/available'); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.patch('/business/categories', async (req, res) => {
+    try { const { data } = await wpp.patch('/business/categories', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  // ── Profile ───────────────────────────────────────────────────────────────────
+
+  router.get('/profile', async (req, res) => {
+    try { const { data } = await wpp.get('/profile'); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.patch('/profile', async (req, res) => {
+    try { const { data } = await wpp.patch('/profile', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.patch('/profile/picture', upload.single('file'), async (req, res) => {
+    try {
+      const form = new FormData();
+      if (req.file) form.append('file', req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
+      const { data } = await wpp.patch('/profile/picture', form, { headers: form.getHeaders() });
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  // ── Status (stories) ─────────────────────────────────────────────────────────
+
+  router.post('/status/text', async (req, res) => {
+    try { const { data } = await wpp.post('/status/text', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/status/image', upload.single('file'), async (req, res) => {
+    try {
+      const form = new FormData();
+      Object.entries(req.body).forEach(([k, v]) => form.append(k, v));
+      if (req.file) form.append('file', req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
+      const { data } = await wpp.post('/status/image', form, { headers: form.getHeaders() });
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/status/video', upload.single('file'), async (req, res) => {
+    try {
+      const form = new FormData();
+      Object.entries(req.body).forEach(([k, v]) => form.append(k, v));
+      if (req.file) form.append('file', req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
+      const { data } = await wpp.post('/status/video', form, { headers: form.getHeaders() });
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  // ── Communities ───────────────────────────────────────────────────────────────
+
+  router.get('/communities', async (req, res) => {
+    try { const { data } = await wpp.get('/communities'); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.get('/communities/:communityId', async (req, res) => {
+    try { const { data } = await wpp.get(`/communities/${req.params.communityId}`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/communities', async (req, res) => {
+    try { const { data } = await wpp.post('/communities', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.delete('/communities/:communityId', async (req, res) => {
+    try { const { data } = await wpp.delete(`/communities/${req.params.communityId}`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.patch('/communities/:communityId/settings', async (req, res) => {
+    try { const { data } = await wpp.patch(`/communities/${req.params.communityId}/settings`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/communities/:communityId/participants/add', async (req, res) => {
+    try { const { data } = await wpp.post(`/communities/${req.params.communityId}/participants/add`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/communities/:communityId/participants/remove', async (req, res) => {
+    try { const { data } = await wpp.post(`/communities/${req.params.communityId}/participants/remove`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/communities/:communityId/admins/promote', async (req, res) => {
+    try { const { data } = await wpp.post(`/communities/${req.params.communityId}/admins/promote`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/communities/:communityId/admins/demote', async (req, res) => {
+    try { const { data } = await wpp.post(`/communities/${req.params.communityId}/admins/demote`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/communities/:communityId/invite/reset', async (req, res) => {
+    try { const { data } = await wpp.post(`/communities/${req.params.communityId}/invite/reset`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/communities/:communityId/groups/link', async (req, res) => {
+    try { const { data } = await wpp.post(`/communities/${req.params.communityId}/groups/link`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/communities/:communityId/groups/unlink', async (req, res) => {
+    try { const { data } = await wpp.post(`/communities/${req.params.communityId}/groups/unlink`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  // ── Queue ─────────────────────────────────────────────────────────────────────
+
+  router.get('/queue', async (req, res) => {
+    try { const { data } = await wpp.get('/queue'); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.delete('/queue', async (req, res) => {
+    try { const { data } = await wpp.delete('/queue'); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.delete('/queue/:messageId', async (req, res) => {
+    try { const { data } = await wpp.delete(`/queue/${req.params.messageId}`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  // ── Channels (newsletter) ─────────────────────────────────────────────────────
+
+  router.get('/newsletter', async (req, res) => {
+    try { const { data } = await wpp.get('/newsletter'); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.get('/newsletter/:channelId', async (req, res) => {
+    try { const { data } = await wpp.get(`/newsletter/${req.params.channelId}`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/newsletter', async (req, res) => {
+    try { const { data } = await wpp.post('/newsletter', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.delete('/newsletter/:channelId', async (req, res) => {
+    try { const { data } = await wpp.delete(`/newsletter/${req.params.channelId}`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.patch('/newsletter/:channelId', async (req, res) => {
+    try { const { data } = await wpp.patch(`/newsletter/${req.params.channelId}`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/newsletter/find', async (req, res) => {
+    try { const { data } = await wpp.post('/newsletter/find', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/newsletter/:channelId/follow', async (req, res) => {
+    try { const { data } = await wpp.post(`/newsletter/${req.params.channelId}/follow`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/newsletter/:channelId/unfollow', async (req, res) => {
+    try { const { data } = await wpp.post(`/newsletter/${req.params.channelId}/unfollow`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/newsletter/:channelId/mute', async (req, res) => {
+    try { const { data } = await wpp.post(`/newsletter/${req.params.channelId}/mute`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/newsletter/:channelId/unmute', async (req, res) => {
+    try { const { data } = await wpp.post(`/newsletter/${req.params.channelId}/unmute`); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/newsletter/:channelId/transfer', async (req, res) => {
+    try { const { data } = await wpp.post(`/newsletter/${req.params.channelId}/transfer`, req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  // ── Calls ─────────────────────────────────────────────────────────────────────
+
+  router.post('/calls/link', async (req, res) => {
+    try { const { data } = await wpp.post('/calls/link', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  // ── Instance — extras ─────────────────────────────────────────────────────────
+
+  router.post('/instance/connect', async (req, res) => {
+    try { const { data } = await wpp.post('/connect'); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/instance/disconnect', async (req, res) => {
+    try { const { data } = await wpp.post('/disconnect'); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/instance/pairing-code', async (req, res) => {
+    try { const { data } = await wpp.post('/pairing-code', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.get('/instance/profile', async (req, res) => {
+    try { const { data } = await wpp.get('/profile'); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.patch('/instance/profile', async (req, res) => {
+    try { const { data } = await wpp.patch('/profile', req.body); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  router.patch('/instance/profile/picture', upload.single('file'), async (req, res) => {
+    try {
+      const form = new FormData();
+      if (req.file) form.append('file', req.file.buffer, { filename: req.file.originalname, contentType: req.file.mimetype });
+      const { data } = await wpp.patch('/profile/picture', form, { headers: form.getHeaders() });
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
   return router;
 }
 
