@@ -167,16 +167,19 @@ export function bindGroupPanelEvents() {
   document.getElementById('btn-save-name').addEventListener('click', async () => {
     const subject = document.getElementById('gp-name-input').value.trim();
     if (!subject) return;
-    await GroupService.updateSubject(state.activeChatId, subject);
-    document.getElementById('gp-name').textContent = subject;
-    document.getElementById('header-name').textContent = subject;
-    const chat = state.chats.find(c => c.id === state.activeChatId);
-    if (chat) {
-      chat.name = subject;
-      const { refreshChatItem } = await import('../ui/ChatListView.js');
-      refreshChatItem(state.activeChatId, document.getElementById('chat-list'), { onOpen: openChat });
-    }
-    document.getElementById('gp-name-edit').classList.add('hidden');
+    try {
+      await GroupService.updateSubject(state.activeChatId, subject);
+      document.getElementById('gp-name').textContent = subject;
+      document.getElementById('header-name').textContent = subject;
+      const chat = state.chats.find(c => c.id === state.activeChatId);
+      if (chat) {
+        chat.name = subject;
+        const { refreshChatItem } = await import('../ui/ChatListView.js');
+        refreshChatItem(state.activeChatId, document.getElementById('chat-list'), { onOpen: openChat });
+      }
+      document.getElementById('gp-name-edit').classList.add('hidden');
+      showToast('Group name updated');
+    } catch (e) { showToast(`Error: ${e.message}`); }
   });
 
   // edit description
@@ -191,11 +194,14 @@ export function bindGroupPanelEvents() {
   );
   document.getElementById('btn-save-desc').addEventListener('click', async () => {
     const description = document.getElementById('gp-desc-input').value.trim();
-    await GroupService.updateDescription(state.activeChatId, description);
-    const descEl = document.getElementById('gp-description');
-    descEl.textContent = description || 'No description';
-    descEl.classList.toggle('gp-muted', !description);
-    document.getElementById('gp-desc-edit').classList.add('hidden');
+    try {
+      await GroupService.updateDescription(state.activeChatId, description);
+      const descEl = document.getElementById('gp-description');
+      descEl.textContent = description || 'No description';
+      descEl.classList.toggle('gp-muted', !description);
+      document.getElementById('gp-desc-edit').classList.add('hidden');
+      showToast('Description updated');
+    } catch (e) { showToast(`Error: ${e.message}`); }
   });
 
   // restrict toggle
