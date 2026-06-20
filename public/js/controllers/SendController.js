@@ -1,7 +1,7 @@
 import { state }          from '../state.js';
 import { MessageService } from '../services/MessageService.js';
 import { appendMessage }  from '../ui/MessageView.js';
-import { nowSec, autoResize, showToast, enc, esc } from '../utils.js';
+import { nowSec, autoResize, showToast, enc, esc, isGroup } from '../utils.js';
 
 // ── Reply ─────────────────────────────────────────────────
 
@@ -42,10 +42,26 @@ export function clearFile() {
 // ── Text ──────────────────────────────────────────────────
 
 export async function sendText(messageCallbacks) {
-  const input   = document.getElementById('message-input');
-  const text    = input.value.trim();
-  const chatId  = state.activeChatId;
+  const input  = document.getElementById('message-input');
+  const text   = input.value.trim();
+  const chatId = state.activeChatId;
   if (!text || !chatId) return;
+
+  // editing an existing message
+  if (state.editingMessage) {
+    const { id: msgId } = state.editingMessage;
+    input.value = '';
+    autoResize(input);
+    clearEdit();
+    try {
+      await MessageService.edit(chatId, msgId, text);
+      const { markBubbleEdited } = await import('../ui/MessageView.js');
+      markBubbleEdited(msgId, text);
+    } catch (e) {
+      showToast(`Edit failed: ${e.message}`);
+    }
+    return;
+  }
 
   input.value = '';
   autoResize(input);
@@ -276,26 +292,38 @@ export async function sendContactCard(messageCallbacks) {
 // ── Revoke ────────────────────────────────────────────────
 
 export async function revokeMessage(e, msg, chatId) {
-  const menu = document.createElement('div');
-  menu.className = 'msg-context-menu';
-  menu.style.top  = `${Math.min(e.clientY, window.innerHeight - 60)}px`;
-  menu.style.left = `${Math.min(e.clientX, window.innerWidth - 200)}px`;
-  menu.innerHTML = `<button class="ctx-item danger">Delete for everyone</button>`;
-  document.body.appendChild(menu);
+  if (!confirm('Delete this message for everyone?')) return;
+  try {
+    await MessageService.revoke(chatId, msg.id);
+    const { markBubbleDeleted } = await import('../ui/MessageView.js');
+    markBubbleDeleted(msg.id, msg.timestamp);
+  } catch (err) {
+    showToast(`Could not delete: ${err.message}`);
+  }
+}
 
-  menu.querySelector('button').addEventListener('click', async () => {
-    document.body.removeChild(menu);
-    try {
-      await MessageService.revoke(chatId, msg.id);
-      const { markBubbleDeleted } = await import('../ui/MessageView.js');
-      markBubbleDeleted(msg.id, msg.timestamp);
-    } catch (err) {
-      showToast(`Could not revoke: ${err.message}`);
-    }
-  });
+// ── Edit ──────────────────────────────────────────────────
 
-  const remove = () => { if (document.body.contains(menu)) document.body.removeChild(menu); document.removeEventListener('click', remove); };
-  setTimeout(() => document.addEventListener('click', remove), 50);
+export function startEdit(msg, bubble) {
+  state.editingMessage = msg;
+  const input = document.getElementById('message-input');
+  input.value = msg.text || '';
+  input.focus();
+  input.setSelectionRange(input.value.length, input.value.length);
+
+  const bar = document.getElementById('edit-preview');
+  if (bar) {
+    document.getElementById('edit-text').textContent = msg.text || '';
+    bar.classList.remove('hidden');
+  }
+  autoResize(input);
+}
+
+export function clearEdit() {
+  state.editingMessage = null;
+  const bar = document.getElementById('edit-preview');
+  if (bar) bar.classList.add('hidden');
+  document.getElementById('message-input').value = '';
 }
 
 // ── Reaction ──────────────────────────────────────────────

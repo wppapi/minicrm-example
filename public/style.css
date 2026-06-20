@@ -212,21 +212,26 @@ html, body { height: 100%; font-family: "Segoe UI", system-ui, sans-serif; backg
 .message-group.out { align-items: flex-end; }
 .message-group.in  { align-items: flex-start; }
 
-.message-group:hover .btn-react { opacity: 1; }
-.btn-react {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  background: var(--bg-panel); border: none; cursor: pointer;
-  border-radius: 50%; width: 28px; height: 28px;
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0; transition: opacity 0.15s; color: var(--text-secondary);
+/* action toolbar */
+.msg-actions {
+  display: flex; align-items: center; gap: 2px;
+  opacity: 0; transition: opacity 0.15s; margin: 2px 4px;
 }
-.message-group.out .btn-react { left: -36px; }
-.message-group.in  .btn-react { right: -36px; }
+.message-group:hover .msg-actions { opacity: 1; }
+.message-group.out .msg-actions { flex-direction: row-reverse; }
+.msg-action-btn {
+  background: var(--bg-panel); border: 1px solid var(--border);
+  border-radius: 50%; width: 26px; height: 26px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-secondary); transition: background 0.12s, color 0.12s;
+}
+.msg-action-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+.msg-action-btn.danger:hover { color: #e57373; }
 
 .bubble {
   max-width: 65%; padding: 6px 10px 22px;
   border-radius: var(--radius); font-size: 14.5px;
-  line-height: 1.4; position: relative; word-break: break-word; cursor: pointer;
+  line-height: 1.4; position: relative; word-break: break-word;
 }
 .bubble.out { background: var(--bg-bubble-out); border-bottom-right-radius: 2px; }
 .bubble.in  { background: var(--bg-bubble-in);  border-bottom-left-radius: 2px; }

@@ -24,23 +24,55 @@ export function appendMessage(chatId, msg, container, callbacks = {}) {
   }
 }
 
-// ── Group (message + reactions row) ──────────────────────
+// ── Group (message + actions toolbar + reactions row) ────
 
-export function buildGroup(msg, chatId, { onReply, onReact, onRevoke } = {}) {
+export function buildGroup(msg, chatId, { onReply, onReact, onRevoke, onEdit } = {}) {
   const group = document.createElement('div');
   group.className = `message-group ${msg.fromMe ? 'out' : 'in'}`;
   group.dataset.msgId = msg.id;
 
-  // react button
-  const btnReact = document.createElement('button');
-  btnReact.className = 'btn-react';
-  btnReact.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`;
-  btnReact.title = 'React';
-  btnReact.addEventListener('click', e => { e.stopPropagation(); onReact?.(msg.id, chatId, btnReact); });
-  group.appendChild(btnReact);
-
-  const bubble = buildBubble(msg, chatId, { onReply, onRevoke });
+  const bubble = buildBubble(msg, chatId);
   group.appendChild(bubble);
+
+  // action toolbar — visible on hover via CSS
+  if (!msg.deleted) {
+    const toolbar = document.createElement('div');
+    toolbar.className = 'msg-actions';
+
+    const btnReply = document.createElement('button');
+    btnReply.className = 'msg-action-btn';
+    btnReply.title = 'Reply';
+    btnReply.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>`;
+    btnReply.addEventListener('click', e => { e.stopPropagation(); onReply?.(msg); });
+    toolbar.appendChild(btnReply);
+
+    const btnReact = document.createElement('button');
+    btnReact.className = 'msg-action-btn';
+    btnReact.title = 'React';
+    btnReact.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`;
+    btnReact.addEventListener('click', e => { e.stopPropagation(); onReact?.(msg.id, chatId, btnReact); });
+    toolbar.appendChild(btnReact);
+
+    if (msg.fromMe) {
+      if (msg.type === 'text') {
+        const btnEdit = document.createElement('button');
+        btnEdit.className = 'msg-action-btn';
+        btnEdit.title = 'Edit';
+        btnEdit.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
+        btnEdit.addEventListener('click', e => { e.stopPropagation(); onEdit?.(msg, bubble); });
+        toolbar.appendChild(btnEdit);
+      }
+
+      const btnDel = document.createElement('button');
+      btnDel.className = 'msg-action-btn danger';
+      btnDel.title = 'Delete for everyone';
+      btnDel.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
+      btnDel.addEventListener('click', e => { e.stopPropagation(); onRevoke?.(e, msg, chatId); });
+      toolbar.appendChild(btnDel);
+    }
+
+    group.appendChild(toolbar);
+  }
 
   const reactionsEl = buildReactionsEl(chatId, msg.id);
   if (reactionsEl) group.appendChild(reactionsEl);
@@ -50,7 +82,7 @@ export function buildGroup(msg, chatId, { onReply, onReact, onRevoke } = {}) {
 
 // ── Bubble ────────────────────────────────────────────────
 
-export function buildBubble(msg, chatId, { onReply, onRevoke } = {}) {
+export function buildBubble(msg, chatId) {
   const bubble = document.createElement('div');
   bubble.className = `bubble ${msg.fromMe ? 'out' : 'in'}${msg.deleted ? ' deleted' : ''}`;
   bubble.dataset.msgId = msg.id;
@@ -80,20 +112,11 @@ export function buildBubble(msg, chatId, { onReply, onRevoke } = {}) {
   inner += `<span class="meta">${formatTime(msg.timestamp)}${msg.fromMe ? rawTicksHtml(msg.status) : ''}</span>`;
 
   bubble.innerHTML = inner;
-  bubble.addEventListener('click', () => onReply?.(msg));
   bubble.querySelector('.quoted')?.addEventListener('click', e => {
     e.stopPropagation();
     document.querySelector(`[data-msg-id="${e.currentTarget.dataset.target}"]`)
       ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
-
-  if (msg.fromMe && !msg.deleted) {
-    bubble.addEventListener('contextmenu', e => {
-      e.preventDefault();
-      e.stopPropagation();
-      onRevoke?.(e, msg, chatId);
-    });
-  }
 
   return bubble;
 }

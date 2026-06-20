@@ -1,4 +1,4 @@
-import { get, post, del, upload } from '../api/client.js';
+import { get, post, patch, del, upload } from '../api/client.js';
 import { enc }                     from '../utils.js';
 
 export const MessageService = {
@@ -25,6 +25,10 @@ export const MessageService = {
 
   async revoke(chatId, messageId) {
     return del(`/messages/${enc(chatId)}/${enc(messageId)}`);
+  },
+
+  async edit(chatId, messageId, text) {
+    return patch(`/messages/${enc(chatId)}/${enc(messageId)}`, { text });
   },
 
   async get(chatId, messageId) {
