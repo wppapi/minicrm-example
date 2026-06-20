@@ -186,8 +186,8 @@ const els = {
 
 // ── Init ────────────────────────────────────────
 async function init() {
-  await loadChats();
-  bindEvents();
+  bindEvents(); // always bind first — doesn't depend on network
+  try { await loadChats(); } catch (e) { console.error('loadChats failed:', e); }
 }
 
 // ── API ─────────────────────────────────────────

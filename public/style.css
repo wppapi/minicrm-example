@@ -444,8 +444,17 @@ html, body { height: 100%; font-family: "Segoe UI", system-ui, sans-serif; backg
 
 /* ── Left panels (Business / Privacy / Instance) ── */
 .left-panel {
-  width: 340px; min-width: 260px; display: flex; flex-direction: column;
-  border-right: 1px solid var(--divider); background: var(--bg-sidebar); flex-shrink: 0;
+  position: fixed;
+  left: var(--nav-width);
+  top: 0;
+  height: 100vh;
+  width: 360px;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--divider);
+  box-shadow: 4px 0 16px rgba(0,0,0,0.4);
 }
 .lp-header {
   display: flex; align-items: center; gap: 12px;
