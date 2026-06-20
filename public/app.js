@@ -53,7 +53,44 @@ const els = {
   callModal:        $('call-modal'),
   callFrom:         $('call-from'),
   callAvatar:       $('call-avatar'),
-  btnRejectCall:    $('btn-reject-call'),
+  btnRejectCall:        $('btn-reject-call'),
+  btnNewGroup:          $('btn-new-group'),
+  btnAcceptInvite:      $('btn-accept-invite'),
+  createGroupModal:     $('create-group-modal'),
+  newGroupName:         $('new-group-name'),
+  newGroupParticipants: $('new-group-participants'),
+  btnCancelCreateGroup: $('btn-cancel-create-group'),
+  btnConfirmCreateGroup:$('btn-confirm-create-group'),
+  acceptInviteModal:    $('accept-invite-modal'),
+  inviteCodeInput:      $('invite-code-input'),
+  btnCancelAcceptInvite:$('btn-cancel-accept-invite'),
+  btnConfirmAcceptInvite:$('btn-confirm-accept-invite'),
+  btnGroupInfo:         $('btn-group-info'),
+  groupPanel:           $('group-panel'),
+  btnCloseGroupPanel:   $('btn-close-group-panel'),
+  gpAvatar:             $('gp-avatar'),
+  gpName:               $('gp-name'),
+  gpDescription:        $('gp-description'),
+  btnEditName:          $('btn-edit-name'),
+  gpNameEdit:           $('gp-name-edit'),
+  gpNameInput:          $('gp-name-input'),
+  btnSaveName:          $('btn-save-name'),
+  btnCancelName:        $('btn-cancel-name'),
+  btnEditDesc:          $('btn-edit-desc'),
+  gpDescEdit:           $('gp-desc-edit'),
+  gpDescInput:          $('gp-desc-input'),
+  btnSaveDesc:          $('btn-save-desc'),
+  btnCancelDesc:        $('btn-cancel-desc'),
+  gpRestrictToggle:     $('gp-restrict-toggle'),
+  gpInviteLink:         $('gp-invite-link'),
+  btnLoadInvite:        $('btn-load-invite'),
+  btnCopyInvite:        $('btn-copy-invite'),
+  btnRevokeInvite:      $('btn-revoke-invite'),
+  gpAddInput:           $('gp-add-input'),
+  btnAddParticipant:    $('btn-add-participant'),
+  gpParticipantsList:   $('gp-participants-list'),
+  gpParticipantsLabel:  $('gp-participants-label'),
+  btnLeaveGroup:        $('btn-leave-group'),
 };
 
 // ── Init ────────────────────────────────────────
@@ -132,7 +169,13 @@ async function openChat(chatId) {
   loadAvatar(chatId, els.headerAvatar);
   els.headerParticipants.textContent = '';
 
-  if (isGroup(chatId)) loadGroupInfo(chatId);
+  if (isGroup(chatId)) {
+    els.btnGroupInfo.classList.remove('hidden');
+    loadGroupInfo(chatId);
+  } else {
+    els.btnGroupInfo.classList.add('hidden');
+    els.groupPanel.classList.add('hidden');
+  }
 
   document.querySelectorAll('.chat-item').forEach(el =>
     el.classList.toggle('active', el.dataset.chatId === chatId)
@@ -686,6 +729,145 @@ function bindEvents() {
 
   // call modal: reject
   els.btnRejectCall.addEventListener('click', () => els.callModal.classList.add('hidden'));
+
+  // ── group: create ──
+  els.btnNewGroup.addEventListener('click', () => els.createGroupModal.classList.remove('hidden'));
+  els.btnCancelCreateGroup.addEventListener('click', () => {
+    els.createGroupModal.classList.add('hidden');
+    els.newGroupName.value = '';
+    els.newGroupParticipants.value = '';
+  });
+  els.btnConfirmCreateGroup.addEventListener('click', async () => {
+    const name = els.newGroupName.value.trim();
+    if (!name) return;
+    const participants = els.newGroupParticipants.value
+      .split('\n').map(s => s.trim()).filter(Boolean);
+    const result = await api('/groups', {
+      method: 'POST',
+      body: JSON.stringify({ name, participants }),
+    });
+    if (result?.data?.groupId) {
+      els.createGroupModal.classList.add('hidden');
+      els.newGroupName.value = '';
+      els.newGroupParticipants.value = '';
+      await loadChats();
+      openChat(result.data.groupId);
+    }
+  });
+
+  // ── group: accept invite ──
+  els.btnAcceptInvite.addEventListener('click', () => els.acceptInviteModal.classList.remove('hidden'));
+  els.btnCancelAcceptInvite.addEventListener('click', () => {
+    els.acceptInviteModal.classList.add('hidden');
+    els.inviteCodeInput.value = '';
+  });
+  els.btnConfirmAcceptInvite.addEventListener('click', async () => {
+    const inviteCode = els.inviteCodeInput.value.trim();
+    if (!inviteCode) return;
+    await api('/groups/invite/accept', { method: 'POST', body: JSON.stringify({ inviteCode }) });
+    els.acceptInviteModal.classList.add('hidden');
+    els.inviteCodeInput.value = '';
+    await loadChats();
+  });
+
+  // ── group panel: open/close ──
+  els.btnGroupInfo.addEventListener('click', () => openGroupPanel(state.activeChatId));
+  els.btnCloseGroupPanel.addEventListener('click', () => els.groupPanel.classList.add('hidden'));
+
+  // ── group panel: edit name ──
+  els.btnEditName.addEventListener('click', () => {
+    els.gpNameInput.value = els.gpName.textContent;
+    els.gpNameEdit.classList.remove('hidden');
+    els.gpNameInput.focus();
+  });
+  els.btnCancelName.addEventListener('click', () => els.gpNameEdit.classList.add('hidden'));
+  els.btnSaveName.addEventListener('click', async () => {
+    const subject = els.gpNameInput.value.trim();
+    if (!subject) return;
+    await api(`/groups/${enc(state.activeChatId)}/subject`, {
+      method: 'PATCH', body: JSON.stringify({ subject }),
+    });
+    els.gpName.textContent = subject;
+    els.headerName.textContent = subject;
+    const chat = state.chats.find(c => c.id === state.activeChatId);
+    if (chat) { chat.name = subject; refreshChatItem(state.activeChatId); }
+    els.gpNameEdit.classList.add('hidden');
+  });
+
+  // ── group panel: edit description ──
+  els.btnEditDesc.addEventListener('click', () => {
+    els.gpDescInput.value = els.gpDescription.textContent === 'No description' ? '' : els.gpDescription.textContent;
+    els.gpDescEdit.classList.remove('hidden');
+    els.gpDescInput.focus();
+  });
+  els.btnCancelDesc.addEventListener('click', () => els.gpDescEdit.classList.add('hidden'));
+  els.btnSaveDesc.addEventListener('click', async () => {
+    const description = els.gpDescInput.value.trim();
+    await api(`/groups/${enc(state.activeChatId)}/description`, {
+      method: 'PATCH', body: JSON.stringify({ description }),
+    });
+    els.gpDescription.textContent = description || 'No description';
+    els.gpDescription.classList.toggle('gp-muted', !description);
+    els.gpDescEdit.classList.add('hidden');
+  });
+
+  // ── group panel: restrict toggle ──
+  els.gpRestrictToggle.addEventListener('change', async () => {
+    const announce = els.gpRestrictToggle.checked ? 'true' : 'false';
+    await api(`/groups/${enc(state.activeChatId)}/settings`, {
+      method: 'PATCH', body: JSON.stringify({ announce }),
+    });
+  });
+
+  // ── group panel: invite link ──
+  els.btnLoadInvite.addEventListener('click', async () => {
+    const result = await api(`/groups/${enc(state.activeChatId)}/invite`);
+    const link = result?.data?.inviteUrl || result?.data?.link || '';
+    els.gpInviteLink.textContent = link || 'Unavailable';
+    els.btnLoadInvite.classList.add('hidden');
+    if (link) {
+      els.btnCopyInvite.classList.remove('hidden');
+      els.btnRevokeInvite.classList.remove('hidden');
+    }
+  });
+  els.btnCopyInvite.addEventListener('click', () => {
+    navigator.clipboard.writeText(els.gpInviteLink.textContent);
+    els.btnCopyInvite.textContent = 'Copied!';
+    setTimeout(() => { els.btnCopyInvite.textContent = 'Copy'; }, 2000);
+  });
+  els.btnRevokeInvite.addEventListener('click', async () => {
+    if (!confirm('Revoke the current invite link? Everyone with the old link will no longer be able to join.')) return;
+    await api(`/groups/${enc(state.activeChatId)}/invite`, { method: 'DELETE' });
+    els.gpInviteLink.textContent = '—';
+    els.btnCopyInvite.classList.add('hidden');
+    els.btnRevokeInvite.classList.add('hidden');
+    els.btnLoadInvite.classList.remove('hidden');
+    els.btnLoadInvite.textContent = 'Get new link';
+  });
+
+  // ── group panel: add participant ──
+  els.btnAddParticipant.addEventListener('click', async () => {
+    const number = els.gpAddInput.value.trim();
+    if (!number) return;
+    await api(`/groups/${enc(state.activeChatId)}/participants`, {
+      method: 'POST', body: JSON.stringify({ participants: [number] }),
+    });
+    els.gpAddInput.value = '';
+    openGroupPanel(state.activeChatId); // refresh panel
+  });
+
+  // ── group panel: leave ──
+  els.btnLeaveGroup.addEventListener('click', async () => {
+    if (!confirm('Leave this group?')) return;
+    await api(`/groups/${enc(state.activeChatId)}/leave`, { method: 'POST' });
+    els.groupPanel.classList.add('hidden');
+    els.chatHeader.classList.add('hidden');
+    els.messages.classList.add('hidden');
+    els.inputBar.classList.add('hidden');
+    els.chatPlaceholder.style.display = '';
+    state.activeChatId = null;
+    await loadChats();
+  });
 }
 
 function handleSend() {
@@ -769,9 +951,97 @@ async function loadGroupInfo(chatId) {
 
     const count = group.participants?.length || 0;
     els.headerParticipants.textContent = `${count} participant${count !== 1 ? 's' : ''}`;
+
+    // cache for the panel
+    state._groupInfo = group;
   } catch {
-    // non-critical — silently skip
+    // non-critical
   }
+}
+
+async function openGroupPanel(chatId) {
+  if (!chatId || !isGroup(chatId)) return;
+
+  // ensure we have fresh info
+  const result = await api(`/groups/${enc(chatId)}`);
+  const group = result?.data;
+  if (!group) return;
+
+  state._groupInfo = group;
+
+  els.gpName.textContent = group.subject || chatId;
+  els.gpDescription.textContent = group.description || 'No description';
+  els.gpDescription.classList.toggle('gp-muted', !group.description);
+  els.gpRestrictToggle.checked = group.announce === true || group.announce === 'true';
+
+  // reset invite section
+  els.gpInviteLink.textContent = '—';
+  els.btnLoadInvite.classList.remove('hidden');
+  els.btnLoadInvite.textContent = 'Get link';
+  els.btnCopyInvite.classList.add('hidden');
+  els.btnRevokeInvite.classList.add('hidden');
+
+  // reset edit forms
+  els.gpNameEdit.classList.add('hidden');
+  els.gpDescEdit.classList.add('hidden');
+
+  // participants
+  const participants = group.participants || [];
+  els.gpParticipantsLabel.textContent = `Participants (${participants.length})`;
+  renderParticipants(participants, chatId);
+
+  els.groupPanel.classList.remove('hidden');
+}
+
+function renderParticipants(participants, chatId) {
+  els.gpParticipantsList.innerHTML = '';
+
+  participants.forEach(p => {
+    const jid  = typeof p === 'string' ? p : p.id;
+    const role = p.role || p.admin || null; // 'admin' | 'superadmin' | null
+    const name = jid.replace('@s.whatsapp.net', '').replace('@g.us', '');
+    const hue  = nameToHue(name);
+
+    const item = document.createElement('div');
+    item.className = 'participant-item';
+    item.innerHTML = `
+      <div class="participant-avatar" style="--hue:${hue};background:hsl(${hue},40%,25%);color:hsl(${hue},70%,70%)">
+        ${name.charAt(0).toUpperCase()}
+      </div>
+      <div class="participant-info">
+        <div class="participant-name">${esc(name)}</div>
+        <div class="participant-role ${role ? 'visible' : ''}">${role ? (role === 'superadmin' ? 'Super admin' : 'Admin') : ''}</div>
+      </div>
+      <div class="participant-actions">
+        ${role ? `<button data-action="demote" data-jid="${esc(jid)}">Remove admin</button>` : `<button data-action="promote" data-jid="${esc(jid)}">Make admin</button>`}
+        <button data-action="remove" data-jid="${esc(jid)}" class="danger">Remove</button>
+      </div>`;
+
+    item.querySelectorAll('[data-action]').forEach(btn => {
+      btn.addEventListener('click', () => handleParticipantAction(btn.dataset.action, btn.dataset.jid, chatId));
+    });
+
+    els.gpParticipantsList.appendChild(item);
+  });
+}
+
+async function handleParticipantAction(action, participantJid, chatId) {
+  const participant = participantJid;
+  if (action === 'remove') {
+    if (!confirm(`Remove ${participant.replace('@s.whatsapp.net', '')} from the group?`)) return;
+    await api(`/groups/${enc(chatId)}/participants`, {
+      method: 'DELETE', body: JSON.stringify({ participants: [participant] }),
+    });
+  } else if (action === 'promote') {
+    await api(`/groups/${enc(chatId)}/admins`, {
+      method: 'POST', body: JSON.stringify({ participants: [participant] }),
+    });
+  } else if (action === 'demote') {
+    await api(`/groups/${enc(chatId)}/admins`, {
+      method: 'DELETE', body: JSON.stringify({ participants: [participant] }),
+    });
+  }
+  openGroupPanel(chatId); // refresh
 }
 
 // Maps a group action to a human-readable system message
