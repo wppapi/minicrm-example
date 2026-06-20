@@ -126,13 +126,95 @@ function createProxyRouter() {
 
   // --- groups ---
 
+  router.post('/groups', async (req, res) => {
+    try {
+      const { data } = await wpp.post('/groups', req.body);
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
   router.get('/groups/:groupId', async (req, res) => {
     try {
       const { data } = await wpp.get(`/groups/${req.params.groupId}`);
       res.json(data);
-    } catch (err) {
-      forwardError(res, err);
-    }
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.patch('/groups/:groupId/subject', async (req, res) => {
+    try {
+      const { data } = await wpp.patch(`/groups/${req.params.groupId}/subject`, req.body);
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.patch('/groups/:groupId/description', async (req, res) => {
+    try {
+      const { data } = await wpp.patch(`/groups/${req.params.groupId}/description`, req.body);
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.patch('/groups/:groupId/settings', async (req, res) => {
+    try {
+      const { data } = await wpp.patch(`/groups/${req.params.groupId}/settings`, req.body);
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/groups/:groupId/participants', async (req, res) => {
+    try {
+      const { data } = await wpp.post(`/groups/${req.params.groupId}/participants`, req.body);
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.delete('/groups/:groupId/participants', async (req, res) => {
+    try {
+      const { data } = await wpp.delete(`/groups/${req.params.groupId}/participants`, { data: req.body });
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/groups/:groupId/admins', async (req, res) => {
+    try {
+      const { data } = await wpp.post(`/groups/${req.params.groupId}/admins`, req.body);
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.delete('/groups/:groupId/admins', async (req, res) => {
+    try {
+      const { data } = await wpp.delete(`/groups/${req.params.groupId}/admins`, { data: req.body });
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/groups/:groupId/leave', async (req, res) => {
+    try {
+      const { data } = await wpp.post(`/groups/${req.params.groupId}/leave`);
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.get('/groups/:groupId/invite', async (req, res) => {
+    try {
+      const { data } = await wpp.get(`/groups/${req.params.groupId}/invite`);
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.delete('/groups/:groupId/invite', async (req, res) => {
+    try {
+      const { data } = await wpp.delete(`/groups/${req.params.groupId}/invite`);
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
+  });
+
+  router.post('/groups/invite/accept', async (req, res) => {
+    try {
+      const { data } = await wpp.post('/groups/invite/accept', req.body);
+      res.json(data);
+    } catch (err) { forwardError(res, err); }
   });
 
   // --- media download ---
