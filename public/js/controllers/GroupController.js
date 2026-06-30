@@ -2,6 +2,7 @@ import { state }         from '../state.js';
 import { GroupService }  from '../services/GroupService.js';
 import { BusinessService } from '../services/BusinessService.js';
 import { avatarColors, nameToHue, esc, enc, isGroup, showToast, loadAvatar } from '../utils.js';
+import { isLid, resolveLid } from '../utils/lidResolver.js';
 import { openChat, loadChats }  from './ChatController.js';
 
 export function groupActionText({ action, participants = [], subject }) {
@@ -64,12 +65,13 @@ function renderParticipants(participants, chatId) {
   const list = document.getElementById('gp-participants-list');
   list.innerHTML = '';
   participants.forEach(p => {
-    const jid  = p.id;
-    const name = p.phone || jid.replace('@s.whatsapp.net', '').replace('@lid', '').replace('@g.us', '');
-    const hue  = nameToHue(name);
-    const item = document.createElement('div');
-    item.className = 'participant-item';
-    item.innerHTML = `
+    const jid       = p.id;
+    const lidPending = isLid(jid) && !p.phone;
+    const name      = p.phone || jid.replace('@s.whatsapp.net', '').replace('@lid', '').replace('@g.us', '');
+    const hue       = nameToHue(name);
+    const item      = document.createElement('div');
+    item.className  = 'participant-item';
+    item.innerHTML  = `
       <div class="participant-avatar" style="background:hsl(${hue},40%,25%);color:hsl(${hue},70%,70%)">
         ${name.charAt(0).toUpperCase()}
       </div>
@@ -87,6 +89,21 @@ function renderParticipants(participants, chatId) {
       btn.addEventListener('click', () => _handleParticipantAction(btn.dataset.action, btn.dataset.jid, chatId))
     );
     list.appendChild(item);
+
+    if (lidPending) {
+      resolveLid(jid).then(phone => {
+        if (!phone) return;
+        const nameEl   = item.querySelector('.participant-name');
+        const avatarEl = item.querySelector('.participant-avatar');
+        if (nameEl) nameEl.textContent = phone;
+        if (avatarEl) {
+          const h = nameToHue(phone);
+          avatarEl.style.background = `hsl(${h},40%,25%)`;
+          avatarEl.style.color      = `hsl(${h},70%,70%)`;
+          avatarEl.textContent      = phone.charAt(0).toUpperCase();
+        }
+      });
+    }
   });
 }
 
