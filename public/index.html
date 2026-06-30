@@ -341,7 +341,7 @@
       </div>
       <div class="gp-section">
         <label class="gp-label">Profile photo</label>
-        <select class="field-select" id="priv-profile-photo">
+        <select class="field-select" id="priv-profile-picture">
           <option value="all">Everyone</option>
           <option value="contacts">My contacts</option>
           <option value="none">Nobody</option>
@@ -369,6 +369,34 @@
           <option value="contacts">My contacts</option>
           <option value="contacts_blacklist">My contacts except...</option>
         </select>
+      </div>
+      <div class="gp-section">
+        <label class="gp-label">Read receipts</label>
+        <select class="field-select" id="priv-read-receipts">
+          <option value="all">Send read receipts</option>
+          <option value="none">Don't send</option>
+        </select>
+      </div>
+      <div class="gp-section">
+        <label class="gp-label">Calls</label>
+        <select class="field-select" id="priv-calls">
+          <option value="all">Everyone</option>
+          <option value="contacts">My contacts</option>
+          <option value="none">Nobody</option>
+        </select>
+      </div>
+      <div class="gp-section">
+        <label class="gp-label">Disappearing messages</label>
+        <select class="field-select" id="priv-messages-timer">
+          <option value="0">Off</option>
+          <option value="86400">24 hours</option>
+          <option value="604800">7 days</option>
+          <option value="7776000">90 days</option>
+        </select>
+      </div>
+      <div class="gp-section">
+        <label class="gp-label">Blocked contacts</label>
+        <span id="priv-blocked-count" class="gp-muted">—</span>
       </div>
       <div class="gp-section" style="border-bottom:none">
         <button id="btn-save-privacy" class="btn-primary btn-block">Save Privacy Settings</button>

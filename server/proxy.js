@@ -319,10 +319,25 @@ function createProxyRouter() {
     catch (err) { forwardError(res, err); }
   });
 
-  // ── Privacy — endpoint não disponível nesta versão da API ───────────────────
+  // ── Privacy ──────────────────────────────────────────────────────────────────
 
-  router.all('/privacy*', (req, res) => {
-    res.status(501).json({ error: 'Privacy settings not available in this API version' });
+  router.get('/privacy/blocked', async (req, res) => {
+    try { const { data } = await wpp.get('/privacy/blocked'); res.json(data); }
+    catch (err) { forwardError(res, err); }
+  });
+
+  // All value-based privacy settings share the same { value } body shape
+  for (const field of ['last-seen', 'online', 'profile-picture', 'status', 'groups-add', 'read-receipts', 'calls']) {
+    router.patch(`/privacy/${field}`, async (req, res) => {
+      try { const { data } = await wpp.patch(`/privacy/${field}`, { value: req.body.value }); res.json(data); }
+      catch (err) { forwardError(res, err); }
+    });
+  }
+
+  // messages-timer uses { duration } instead of { value }
+  router.patch('/privacy/messages-timer', async (req, res) => {
+    try { const { data } = await wpp.patch('/privacy/messages-timer', { duration: req.body.duration }); res.json(data); }
+    catch (err) { forwardError(res, err); }
   });
 
   // ── Messages — extra types ───────────────────────────────────────────────────
